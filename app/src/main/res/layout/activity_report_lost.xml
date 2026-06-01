@@ -348,6 +348,12 @@
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/imgSelectedItem"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
 
         </LinearLayout>
     </LinearLayout>
