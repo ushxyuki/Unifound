@@ -11,7 +11,8 @@
 
         <activity android:name=".ReportLostActivity" />
         <activity android:name=".ReportFoundActivity" />
-
+        <activity android:name=".ViewReportsActivity" />
+        <activity android:name=".ItemDetailsActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

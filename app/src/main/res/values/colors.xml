@@ -4,6 +4,12 @@
     <!-- Main App Colours -->
     <color name="primary_blue">#2563EB</color>
     <color name="primary_blue_dark">#1D4ED8</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="app_blue">#2563EB</color>
+    <color name="chip_background">#DBEAFE</color>
+
 
     <!-- Grey Theme -->
     <color name="screen_background">#F8FAFC</color>
