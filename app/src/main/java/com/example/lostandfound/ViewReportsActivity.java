@@ -1,12 +1,13 @@
 package com.example.lostandfound;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -110,17 +111,57 @@ public class ViewReportsActivity extends AppCompatActivity {
             }
         });
 
-        cardLostBackpack.setOnClickListener(v ->
-                Toast.makeText(this, "Black Backpack selected", Toast.LENGTH_SHORT).show());
+        cardLostBackpack.setOnClickListener(v -> openItemDetails(
+                "🎒",
+                "Black Backpack",
+                "Lost",
+                "Library - Floor 2",
+                "01/06/2026",
+                "Bag",
+                "Black Nike backpack with a laptop charger inside. Last seen near the library study area.",
+                "Student Services",
+                "lostandfound@university.ac.uk",
+                "Available through university office"
+        ));
 
-        cardFoundKeychain.setOnClickListener(v ->
-                Toast.makeText(this, "Silver Keychain selected", Toast.LENGTH_SHORT).show());
+        cardFoundKeychain.setOnClickListener(v -> openItemDetails(
+                "🔑",
+                "Silver Keychain",
+                "Found",
+                "Main Cafeteria",
+                "01/06/2026",
+                "Keys",
+                "Silver keychain found near the cafeteria seating area.",
+                "Finder / Student Services",
+                "lostandfound@university.ac.uk",
+                "Available through university office"
+        ));
 
-        cardLostCharger.setOnClickListener(v ->
-                Toast.makeText(this, "Laptop Charger selected", Toast.LENGTH_SHORT).show());
+        cardLostCharger.setOnClickListener(v -> openItemDetails(
+                "💻",
+                "Laptop Charger",
+                "Lost",
+                "Computer Lab",
+                "31/05/2026",
+                "Electronics",
+                "Black laptop charger lost in the computer lab.",
+                "Student Services",
+                "lostandfound@university.ac.uk",
+                "Available through university office"
+        ));
 
-        cardFoundBottle.setOnClickListener(v ->
-                Toast.makeText(this, "Water Bottle selected", Toast.LENGTH_SHORT).show());
+        cardFoundBottle.setOnClickListener(v -> openItemDetails(
+                "💧",
+                "Water Bottle",
+                "Found",
+                "Sports Centre",
+                "30/05/2026",
+                "Bottle",
+                "Water bottle found at the sports centre reception area.",
+                "Finder / Student Services",
+                "lostandfound@university.ac.uk",
+                "Available through university office"
+        ));
 
         updateChipStyle();
         filterReports();
@@ -175,12 +216,47 @@ public class ViewReportsActivity extends AppCompatActivity {
     }
 
     private void selectChip(TextView chip) {
-        chip.setTextColor(getResources().getColor(android.R.color.white));
-        chip.setBackgroundColor(getResources().getColor(R.color.app_blue));
+        chip.setTextColor(Color.WHITE);
+        chip.setBackground(makeRoundedBackground("#2563EB"));
     }
 
     private void resetChip(TextView chip) {
-        chip.setTextColor(getResources().getColor(R.color.app_blue));
-        chip.setBackgroundColor(getResources().getColor(R.color.chip_background));
+        chip.setTextColor(Color.parseColor("#2563EB"));
+        chip.setBackground(makeRoundedBackground("#DBEAFE"));
+    }
+
+    private GradientDrawable makeRoundedBackground(String color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(Color.parseColor(color));
+        drawable.setCornerRadius(50);
+        return drawable;
+    }
+
+    private void openItemDetails(
+            String icon,
+            String title,
+            String status,
+            String location,
+            String date,
+            String category,
+            String description,
+            String contactName,
+            String contactEmail,
+            String contactPhone
+    ) {
+        Intent intent = new Intent(ViewReportsActivity.this, ItemDetailsActivity.class);
+
+        intent.putExtra("icon", icon);
+        intent.putExtra("title", title);
+        intent.putExtra("status", status);
+        intent.putExtra("location", location);
+        intent.putExtra("date", date);
+        intent.putExtra("category", category);
+        intent.putExtra("description", description);
+        intent.putExtra("contactName", contactName);
+        intent.putExtra("contactEmail", contactEmail);
+        intent.putExtra("contactPhone", contactPhone);
+
+        startActivity(intent);
     }
 }

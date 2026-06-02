@@ -21,18 +21,15 @@ class MainActivity : AppCompatActivity() {
         btnBrowse = findViewById(R.id.btnBrowse)
 
         cardReportLost.setOnClickListener {
-            val intent = Intent(this, ReportLostActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, ReportLostActivity::class.java))
         }
 
         cardReportFound.setOnClickListener {
-            val intent = Intent(this, ReportFoundActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, ReportFoundActivity::class.java))
         }
 
         btnBrowse.setOnClickListener {
-            val intent = Intent(this, ViewReportsActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, ViewReportsActivity::class.java))
         }
     }
 }

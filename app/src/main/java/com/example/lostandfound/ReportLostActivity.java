@@ -123,7 +123,7 @@ public class ReportLostActivity extends AppCompatActivity {
             return;
         }
 
-        Toast.makeText(this, "Lost item submitted successfully", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Lost report submitted to Lost & Found Office", Toast.LENGTH_LONG).show();
 
         finish();
     }
