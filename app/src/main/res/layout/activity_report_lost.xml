@@ -11,23 +11,25 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Top App Bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            android:background="#334155"
+            android:background="#2563EB"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="20dp"
+            android:paddingStart="0dp"
             android:paddingEnd="20dp">
 
-            <TextView
+            <Button
                 android:id="@+id/btnBackHome"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:gravity="center"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="@android:color/transparent"
                 android:text="‹"
+                android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textSize="36sp"
+                android:textSize="38sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -38,6 +40,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -46,13 +49,14 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <!-- Intro Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="22dp"
                 app:cardElevation="3dp"
-                app:strokeColor="#E2E8F0"
+                app:strokeColor="#DBEAFE"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -76,9 +80,11 @@
                         android:text="Fill in the details below so the university community can help return your item safely."
                         android:textColor="#64748B"
                         android:textSize="14sp" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Student Details -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,7 +100,9 @@
                 android:layout_marginTop="12dp"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="22dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -108,7 +116,8 @@
                         android:hint="Student ID"
                         app:boxBackgroundColor="#F1F5F9"
                         app:boxBackgroundMode="filled"
-                        app:boxStrokeColor="#CBD5E1">
+                        app:boxStrokeColor="#CBD5E1"
+                        app:hintTextColor="#64748B">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etStudentId"
@@ -125,7 +134,8 @@
                         android:hint="University Email"
                         app:boxBackgroundColor="#F1F5F9"
                         app:boxBackgroundMode="filled"
-                        app:boxStrokeColor="#CBD5E1">
+                        app:boxStrokeColor="#CBD5E1"
+                        app:hintTextColor="#64748B">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEmail"
@@ -142,7 +152,8 @@
                         android:hint="Full Name"
                         app:boxBackgroundColor="#F1F5F9"
                         app:boxBackgroundMode="filled"
-                        app:boxStrokeColor="#CBD5E1">
+                        app:boxStrokeColor="#CBD5E1"
+                        app:hintTextColor="#64748B">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etFullName"
@@ -151,9 +162,11 @@
                             android:inputType="textPersonName"
                             android:textColor="#0F172A" />
                     </com.google.android.material.textfield.TextInputLayout>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Item Information -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -169,7 +182,9 @@
                 android:layout_marginTop="12dp"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="22dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -183,7 +198,8 @@
                         android:hint="Item Name"
                         app:boxBackgroundColor="#F1F5F9"
                         app:boxBackgroundMode="filled"
-                        app:boxStrokeColor="#CBD5E1">
+                        app:boxStrokeColor="#CBD5E1"
+                        app:hintTextColor="#64748B">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etItemName"
@@ -199,7 +215,8 @@
                         android:hint="Category"
                         app:boxBackgroundColor="#F1F5F9"
                         app:boxBackgroundMode="filled"
-                        app:boxStrokeColor="#CBD5E1">
+                        app:boxStrokeColor="#CBD5E1"
+                        app:hintTextColor="#64748B">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etCategory"
@@ -215,7 +232,8 @@
                         android:hint="Description / Proof"
                         app:boxBackgroundColor="#F1F5F9"
                         app:boxBackgroundMode="filled"
-                        app:boxStrokeColor="#CBD5E1">
+                        app:boxStrokeColor="#CBD5E1"
+                        app:hintTextColor="#64748B">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etDescription"
@@ -225,9 +243,11 @@
                             android:inputType="textMultiLine"
                             android:textColor="#0F172A" />
                     </com.google.android.material.textfield.TextInputLayout>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Location -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -243,7 +263,9 @@
                 android:layout_marginTop="12dp"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="22dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:strokeColor="#E2E8F0"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -257,7 +279,8 @@
                         android:hint="Location Lost"
                         app:boxBackgroundColor="#F1F5F9"
                         app:boxBackgroundMode="filled"
-                        app:boxStrokeColor="#CBD5E1">
+                        app:boxStrokeColor="#CBD5E1"
+                        app:hintTextColor="#64748B">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etLocation"
@@ -273,7 +296,8 @@
                         android:hint="Date Lost"
                         app:boxBackgroundColor="#F1F5F9"
                         app:boxBackgroundMode="filled"
-                        app:boxStrokeColor="#CBD5E1">
+                        app:boxStrokeColor="#CBD5E1"
+                        app:hintTextColor="#64748B">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etDateLost"
@@ -281,9 +305,11 @@
                             android:layout_height="wrap_content"
                             android:textColor="#0F172A" />
                     </com.google.android.material.textfield.TextInputLayout>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Item Photo -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -295,8 +321,10 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="150dp"
                 android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true"
                 app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="22dp"
                 app:cardElevation="3dp"
@@ -311,11 +339,18 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <ImageView
+                        android:id="@+id/imgSelectedItem"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="＋"
-                        android:textColor="#334155"
+                        android:textColor="#2563EB"
                         android:textSize="34sp"
                         android:textStyle="bold" />
 
@@ -323,7 +358,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Upload Item Photo"
-                        android:textColor="#334155"
+                        android:textColor="#2563EB"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -331,29 +366,25 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Add a photo to help identify the item"
+                        android:text="Take a photo or choose from gallery"
                         android:textColor="#64748B"
                         android:textSize="12sp" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Submit -->
             <Button
                 android:id="@+id/btnSubmitLost"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
                 android:layout_marginTop="24dp"
-                android:backgroundTint="#334155"
+                android:backgroundTint="#2563EB"
                 android:text="Submit Lost Report"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold" />
-            <ImageView
-                android:id="@+id/imgSelectedItem"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
 
         </LinearLayout>
     </LinearLayout>

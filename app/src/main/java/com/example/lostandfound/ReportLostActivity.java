@@ -4,10 +4,10 @@ import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,8 +21,7 @@ public class ReportLostActivity extends AppCompatActivity {
     TextInputEditText etStudentId, etEmail, etFullName;
     TextInputEditText etItemName, etCategory, etDateLost, etLocation, etDescription;
 
-    Button btnSubmitLost;
-    TextView btnBackHome;
+    Button btnBackHome, btnSubmitLost;
     LinearLayout btnUploadPhoto;
     ImageView imgSelectedItem;
 
@@ -34,8 +33,10 @@ public class ReportLostActivity extends AppCompatActivity {
                 if (uri != null) {
                     selectedImageUri = uri;
                     selectedBitmap = null;
+
                     imgSelectedItem.setImageURI(uri);
-                    imgSelectedItem.setVisibility(ImageView.VISIBLE);
+                    imgSelectedItem.setVisibility(View.VISIBLE);
+
                     Toast.makeText(this, "Photo selected", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -45,8 +46,10 @@ public class ReportLostActivity extends AppCompatActivity {
                 if (bitmap != null) {
                     selectedBitmap = bitmap;
                     selectedImageUri = null;
+
                     imgSelectedItem.setImageBitmap(bitmap);
-                    imgSelectedItem.setVisibility(ImageView.VISIBLE);
+                    imgSelectedItem.setVisibility(View.VISIBLE);
+
                     Toast.makeText(this, "Photo captured", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -93,14 +96,23 @@ public class ReportLostActivity extends AppCompatActivity {
     }
 
     private void submitLostItem() {
-        if (getText(etStudentId).isEmpty() ||
-                getText(etEmail).isEmpty() ||
-                getText(etFullName).isEmpty() ||
-                getText(etItemName).isEmpty() ||
-                getText(etCategory).isEmpty() ||
-                getText(etDateLost).isEmpty() ||
-                getText(etLocation).isEmpty() ||
-                getText(etDescription).isEmpty()) {
+        String studentId = getText(etStudentId);
+        String email = getText(etEmail);
+        String fullName = getText(etFullName);
+        String itemName = getText(etItemName);
+        String category = getText(etCategory);
+        String dateLost = getText(etDateLost);
+        String location = getText(etLocation);
+        String description = getText(etDescription);
+
+        if (studentId.isEmpty() ||
+                email.isEmpty() ||
+                fullName.isEmpty() ||
+                itemName.isEmpty() ||
+                category.isEmpty() ||
+                dateLost.isEmpty() ||
+                location.isEmpty() ||
+                description.isEmpty()) {
 
             Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
             return;
@@ -112,11 +124,14 @@ public class ReportLostActivity extends AppCompatActivity {
         }
 
         Toast.makeText(this, "Lost item submitted successfully", Toast.LENGTH_LONG).show();
+
         finish();
     }
 
     private String getText(TextInputEditText editText) {
-        if (editText.getText() == null) return "";
+        if (editText.getText() == null) {
+            return "";
+        }
         return editText.getText().toString().trim();
     }
 }
