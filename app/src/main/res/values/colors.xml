@@ -21,6 +21,8 @@
 
     <color name="app_found_bg">#DCFCE7</color>
     <color name="app_found_text">#047857</color>
+    <color name="success_green">#047857</color>
+    <color name="danger_red">#B91C1C</color>
 
     <!-- Professional Bottom Navigation Colors -->
     <color name="bottom_nav_background">#EFF6FF</color>

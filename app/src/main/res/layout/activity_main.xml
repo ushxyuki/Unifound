@@ -12,21 +12,23 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNav"
         android:clipToPadding="false"
-        android:paddingBottom="16dp">
+        android:paddingBottom="28dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Top Section -->
             <LinearLayout
                 android:id="@+id/topSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_top_section"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:paddingStart="20dp"
+                android:paddingTop="20dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="22dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -45,7 +47,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Welcome Back"
-                            android:textColor="#DCE8FF"
+                            android:textColor="@color/app_soft_blue"
                             android:textSize="14sp" />
 
                         <TextView
@@ -55,7 +57,7 @@
                             android:layout_marginTop="4dp"
                             android:text="UniFound"
                             android:textColor="@android:color/white"
-                            android:textSize="28sp"
+                            android:textSize="30sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -65,6 +67,7 @@
                         android:layout_height="48dp"
                         android:background="@drawable/bg_profile_circle"
                         android:clickable="true"
+                        android:contentDescription="Open profile"
                         android:focusable="true"
                         android:gravity="center"
                         android:text="U"
@@ -75,11 +78,11 @@
 
                 <TextView
                     android:id="@+id/tvSubtitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:text="The easiest way to find and return university items."
-                    android:textColor="#EAF2FF"
+                    android:layout_marginTop="16dp"
+                    android:text="Search, report, and return campus items faster."
+                    android:textColor="@android:color/white"
                     android:textSize="14sp" />
 
                 <androidx.cardview.widget.CardView
@@ -96,21 +99,25 @@
                         android:background="@color/app_card_white"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:paddingLeft="14dp"
+                        android:paddingStart="14dp"
                         android:paddingTop="8dp"
-                        android:paddingRight="14dp"
+                        android:paddingEnd="14dp"
                         android:paddingBottom="8dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔍"
-                            android:textSize="18sp" />
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/bg_icon_soft_blue"
+                            android:contentDescription="Search"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_search"
+                            android:tint="@color/app_blue" />
 
                         <EditText
                             android:id="@+id/etSearch"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:background="@android:color/transparent"
                             android:hint="Search items..."
@@ -120,22 +127,75 @@
                             android:textColorHint="@color/app_hint" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardHomeHero"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/app_card_white"
+                    app:cardCornerRadius="22dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/bottom_nav_border"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Find lost items faster"
+                                android:textColor="@color/app_text_dark"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:text="Report, search, and recover items around campus"
+                                android:textColor="@color/app_text_light"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/ivHomeHero"
+                            android:layout_width="82dp"
+                            android:layout_height="82dp"
+                            android:layout_marginStart="14dp"
+                            android:background="@drawable/bg_home_hero_visual"
+                            android:contentDescription="Lost and found search illustration"
+                            android:padding="18dp"
+                            android:src="@drawable/ic_home_hero"
+                            android:tint="@color/app_blue" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Report Actions -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="18dp"
-                android:layout_marginRight="16dp"
+                android:layout_marginEnd="16dp"
                 android:orientation="horizontal"
                 android:weightSum="2">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardReportLost"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="150dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:clickable="true"
@@ -150,28 +210,42 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <ImageView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_status_lost"
+                            android:contentDescription="Report lost"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_report_lost"
+                            android:tint="@color/danger_red" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="📍"
-                            android:textSize="28sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="10dp"
                             android:text="Report Lost"
                             android:textColor="@color/app_text_dark"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:text="Tell us what you lost"
+                            android:textColor="@color/app_text_light"
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardReportFound"
                     android:layout_width="0dp"
-                    android:layout_height="120dp"
+                    android:layout_height="150dp"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:clickable="true"
@@ -186,95 +260,372 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <ImageView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_status_found"
+                            android:contentDescription="Report found"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_report_found"
+                            android:tint="@color/success_green" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="✅"
-                            android:textSize="28sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="10dp"
                             android:text="Report Found"
                             android:textColor="@color/app_text_dark"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:text="Help return an item"
+                            android:textColor="@color/app_text_light"
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Quick Access Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="22dp"
-                android:text="Quick Access"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="Popular Categories"
                 android:textColor="@color/app_text_dark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/btnBrowse"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginLeft="16dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/bg_primary_button"
-                android:backgroundTint="@color/app_blue"
-                android:text="View Reports"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        style="@style/HomeCategoryChip"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="Bags"
+                            android:src="@drawable/ic_bag"
+                            android:tint="@color/app_blue" />
+
+                        <TextView
+                            style="@style/HomeCategoryChipText"
+                            android:text="Bags" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/HomeCategoryChip"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="Student ID"
+                            android:src="@drawable/ic_id_card"
+                            android:tint="@color/app_blue" />
+
+                        <TextView
+                            style="@style/HomeCategoryChipText"
+                            android:text="Student ID" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/HomeCategoryChip"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="Laptop"
+                            android:src="@drawable/ic_laptop"
+                            android:tint="@color/app_blue" />
+
+                        <TextView
+                            style="@style/HomeCategoryChipText"
+                            android:text="Laptop" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/HomeCategoryChip"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="Keys"
+                            android:src="@drawable/ic_key"
+                            android:tint="@color/app_blue" />
+
+                        <TextView
+                            style="@style/HomeCategoryChipText"
+                            android:text="Keys" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/HomeCategoryChip"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="Phone"
+                            android:src="@drawable/ic_phone"
+                            android:tint="@color/app_blue" />
+
+                        <TextView
+                            style="@style/HomeCategoryChipText"
+                            android:text="Phone" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/HomeCategoryChip"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:contentDescription="Bottle"
+                            android:src="@drawable/ic_bottle"
+                            android:tint="@color/app_blue" />
+
+                        <TextView
+                            style="@style/HomeCategoryChipText"
+                            android:text="Bottle" />
+                    </LinearLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="26dp"
+                android:text="Recently Reported"
+                android:textColor="@color/app_text_dark"
+                android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/btnMyReports"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginLeft="16dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/bg_primary_button"
-                android:backgroundTint="@color/app_blue"
-                android:text="My Reports"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnMessages"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/bg_primary_button"
-                android:backgroundTint="@color/app_blue"
-                android:text="Messages"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/app_card_white"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="3dp"
+                    app:strokeColor="@color/app_border"
+                    app:strokeWidth="1dp">
 
-            <Button
-                android:id="@+id/btnOffice"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginRight="16dp"
-                android:background="@drawable/bg_dark_button"
-                android:text="Contact Office"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="14dp">
 
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_icon_soft_blue"
+                            android:contentDescription="Black Backpack"
+                            android:padding="14dp"
+                            android:src="@drawable/ic_bag"
+                            android:tint="@color/app_blue" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Black Backpack"
+                                android:textColor="@color/app_text_dark"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Library - Floor 2"
+                                android:textColor="@color/app_text_light"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:background="@drawable/bg_status_lost"
+                            android:gravity="center"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:text="Lost"
+                            android:textColor="@color/danger_red"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/app_card_white"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="3dp"
+                    app:strokeColor="@color/app_border"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="14dp">
+
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_icon_soft_green"
+                            android:contentDescription="Silver Keychain"
+                            android:padding="14dp"
+                            android:src="@drawable/ic_key"
+                            android:tint="@color/success_green" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Silver Keychain"
+                                android:textColor="@color/app_text_dark"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Main Cafeteria"
+                                android:textColor="@color/app_text_light"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:background="@drawable/bg_status_found"
+                            android:gravity="center"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:text="Found"
+                            android:textColor="@color/success_green"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/app_card_white"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="3dp"
+                    app:strokeColor="@color/app_border"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="14dp">
+
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_icon_soft_blue"
+                            android:contentDescription="Blue Water Bottle"
+                            android:padding="14dp"
+                            android:src="@drawable/ic_bottle"
+                            android:tint="@color/app_blue" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Blue Water Bottle"
+                                android:textColor="@color/app_text_dark"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Sports Hall"
+                                android:textColor="@color/app_text_light"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:background="@drawable/bg_status_lost"
+                            android:gravity="center"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:text="Lost"
+                            android:textColor="@color/danger_red"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -7,12 +7,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -168,35 +165,7 @@ public class ViewReportsActivity extends AppCompatActivity {
     }
 
     private void setupBottomNav() {
-        highlightTab();
-
-        findViewById(R.id.navHome).setOnClickListener(v -> {
-            startActivity(new Intent(this, MainActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-        });
-        findViewById(R.id.navMessages).setOnClickListener(v -> {
-            startActivity(new Intent(this, MessagesActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-        });
-        findViewById(R.id.navProfile).setOnClickListener(v -> {
-            startActivity(new Intent(this, ProfileActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
-        });
-    }
-
-    private void highlightTab() {
-        LinearLayout pill = findViewById(R.id.navReportsPill);
-        TextView label = findViewById(R.id.navReportsLabel);
-        ImageView icon = findViewById(R.id.navReportsIcon);
-
-        if (pill != null) pill.setBackgroundResource(R.drawable.bg_nav_pill);
-        if (label != null) {
-            label.setVisibility(View.VISIBLE);
-            label.setTextColor(ContextCompat.getColor(this, R.color.bottom_nav_selected));
-        }
-        if (icon != null) {
-            icon.setColorFilter(ContextCompat.getColor(this, R.color.bottom_nav_selected));
-        }
+        BottomNavHelper.setup(this, BottomNavHelper.Tab.REPORTS);
     }
 
     private void filterReports() {
