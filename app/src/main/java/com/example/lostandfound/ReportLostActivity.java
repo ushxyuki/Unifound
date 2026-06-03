@@ -21,7 +21,7 @@ public class ReportLostActivity extends AppCompatActivity {
     private TextInputEditText etStudentId, etEmail, etFullName;
     private TextInputEditText etItemName, etCategory, etDateLost, etLocation, etDescription;
 
-    private View btnBackHome;
+    private Button btnBackHome;
     private Button btnSubmitLost;
     private LinearLayout btnUploadPhoto;
     private ImageView imgSelectedItem;
@@ -37,8 +37,6 @@ public class ReportLostActivity extends AppCompatActivity {
 
                     imgSelectedItem.setImageURI(uri);
                     imgSelectedItem.setVisibility(View.VISIBLE);
-
-                    Toast.makeText(this, "Photo selected", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -50,8 +48,6 @@ public class ReportLostActivity extends AppCompatActivity {
 
                     imgSelectedItem.setImageBitmap(bitmap);
                     imgSelectedItem.setVisibility(View.VISIBLE);
-
-                    Toast.makeText(this, "Photo captured", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -78,9 +74,13 @@ public class ReportLostActivity extends AppCompatActivity {
             btnBackHome.setOnClickListener(v -> finish());
         }
 
-        btnUploadPhoto.setOnClickListener(v -> showImageOptions());
+        if (btnUploadPhoto != null) {
+            btnUploadPhoto.setOnClickListener(v -> showImageOptions());
+        }
 
-        btnSubmitLost.setOnClickListener(v -> submitLostItem());
+        if (btnSubmitLost != null) {
+            btnSubmitLost.setOnClickListener(v -> submitLostItem());
+        }
     }
 
     private void showImageOptions() {
@@ -99,42 +99,13 @@ public class ReportLostActivity extends AppCompatActivity {
     }
 
     private void submitLostItem() {
-        String studentId = getText(etStudentId);
-        String email = getText(etEmail);
-        String fullName = getText(etFullName);
-        String itemName = getText(etItemName);
-        String category = getText(etCategory);
-        String dateLost = getText(etDateLost);
-        String location = getText(etLocation);
-        String description = getText(etDescription);
-
-        if (studentId.isEmpty() ||
-                email.isEmpty() ||
-                fullName.isEmpty() ||
-                itemName.isEmpty() ||
-                category.isEmpty() ||
-                dateLost.isEmpty() ||
-                location.isEmpty() ||
-                description.isEmpty()) {
-
-            Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (selectedImageUri == null && selectedBitmap == null) {
-            Toast.makeText(this, "Please upload an item photo", Toast.LENGTH_SHORT).show();
+        String itemName = etItemName.getText().toString().trim();
+        if (itemName.isEmpty()) {
+            Toast.makeText(this, "Please enter item name", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Toast.makeText(this, "Lost report submitted to Lost & Found Office", Toast.LENGTH_LONG).show();
-
         finish();
-    }
-
-    private String getText(TextInputEditText editText) {
-        if (editText.getText() == null) {
-            return "";
-        }
-        return editText.getText().toString().trim();
     }
 }

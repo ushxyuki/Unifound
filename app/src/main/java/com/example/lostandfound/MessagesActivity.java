@@ -10,28 +10,18 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-public class ProfileActivity extends AppCompatActivity {
+public class MessagesActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_messages);
 
         setupBottomNav();
-
-        Button btnBackProfile = findViewById(R.id.btnBackProfile);
-        if (btnBackProfile != null) {
-            btnBackProfile.setOnClickListener(v -> finish());
-        }
-
-        Button btnLogout = findViewById(R.id.btnLogout);
-        if (btnLogout != null) {
-            btnLogout.setOnClickListener(v -> {
-                Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            });
+        
+        Button btnBackMessages = findViewById(R.id.btnBackMessages);
+        if (btnBackMessages != null) {
+            btnBackMessages.setOnClickListener(v -> finish());
         }
     }
 
@@ -46,16 +36,16 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(this, ViewReportsActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         });
-        findViewById(R.id.navMessages).setOnClickListener(v -> {
-            startActivity(new Intent(this, MessagesActivity.class)
+        findViewById(R.id.navProfile).setOnClickListener(v -> {
+            startActivity(new Intent(this, ProfileActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
         });
     }
 
     private void highlightTab() {
-        LinearLayout pill = findViewById(R.id.navProfilePill);
-        TextView label = findViewById(R.id.navProfileLabel);
-        ImageView icon = findViewById(R.id.navProfileIcon);
+        LinearLayout pill = findViewById(R.id.navMessagesPill);
+        TextView label = findViewById(R.id.navMessagesLabel);
+        ImageView icon = findViewById(R.id.navMessagesIcon);
 
         if (pill != null) pill.setBackgroundResource(R.drawable.bg_nav_pill);
         if (label != null) {
