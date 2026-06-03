@@ -58,6 +58,8 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="@drawable/bg_profile_circle"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center"
                     android:text="U"
                     android:textColor="@android:color/white"

@@ -18,17 +18,18 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class ReportLostActivity extends AppCompatActivity {
 
-    TextInputEditText etStudentId, etEmail, etFullName;
-    TextInputEditText etItemName, etCategory, etDateLost, etLocation, etDescription;
+    private TextInputEditText etStudentId, etEmail, etFullName;
+    private TextInputEditText etItemName, etCategory, etDateLost, etLocation, etDescription;
 
-    Button btnBackHome, btnSubmitLost;
-    LinearLayout btnUploadPhoto;
-    ImageView imgSelectedItem;
+    private View btnBackHome;
+    private Button btnSubmitLost;
+    private LinearLayout btnUploadPhoto;
+    private ImageView imgSelectedItem;
 
-    Uri selectedImageUri = null;
-    Bitmap selectedBitmap = null;
+    private Uri selectedImageUri = null;
+    private Bitmap selectedBitmap = null;
 
-    ActivityResultLauncher<String> galleryLauncher =
+    private ActivityResultLauncher<String> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     selectedImageUri = uri;
@@ -41,7 +42,7 @@ public class ReportLostActivity extends AppCompatActivity {
                 }
             });
 
-    ActivityResultLauncher<Void> cameraLauncher =
+    private ActivityResultLauncher<Void> cameraLauncher =
             registerForActivityResult(new ActivityResultContracts.TakePicturePreview(), bitmap -> {
                 if (bitmap != null) {
                     selectedBitmap = bitmap;
@@ -73,7 +74,9 @@ public class ReportLostActivity extends AppCompatActivity {
         etLocation = findViewById(R.id.etLocation);
         etDescription = findViewById(R.id.etDescription);
 
-        btnBackHome.setOnClickListener(v -> finish());
+        if (btnBackHome != null) {
+            btnBackHome.setOnClickListener(v -> finish());
+        }
 
         btnUploadPhoto.setOnClickListener(v -> showImageOptions());
 

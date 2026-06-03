@@ -1,14 +1,13 @@
 package com.example.lostandfound;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -19,19 +18,19 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class ReportFoundActivity extends AppCompatActivity {
 
-    TextView btnBackHomeFound;
-    Button btnSubmitFound;
+    private View btnBackHomeFound;
+    private Button btnSubmitFound;
 
-    TextInputEditText etFinderName, etFinderPhone;
-    TextInputEditText etFoundItemName, etFoundCategory, etFoundLocation, etFoundDescription;
+    private TextInputEditText etFinderName, etFinderPhone;
+    private TextInputEditText etFoundItemName, etFoundCategory, etFoundLocation, etFoundDescription;
 
-    LinearLayout btnUploadFoundPhoto;
-    ImageView imgSelectedFoundItem;
+    private LinearLayout btnUploadFoundPhoto;
+    private ImageView imgSelectedFoundItem;
 
-    Uri selectedImageUri = null;
-    Bitmap selectedBitmap = null;
+    private Uri selectedImageUri = null;
+    private Bitmap selectedBitmap = null;
 
-    ActivityResultLauncher<String> galleryLauncher =
+    private ActivityResultLauncher<String> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     selectedImageUri = uri;
@@ -42,7 +41,7 @@ public class ReportFoundActivity extends AppCompatActivity {
                 }
             });
 
-    ActivityResultLauncher<Void> cameraLauncher =
+    private ActivityResultLauncher<Void> cameraLauncher =
             registerForActivityResult(new ActivityResultContracts.TakePicturePreview(), bitmap -> {
                 if (bitmap != null) {
                     selectedBitmap = bitmap;
@@ -71,16 +70,17 @@ public class ReportFoundActivity extends AppCompatActivity {
         btnUploadFoundPhoto = findViewById(R.id.btnUploadFoundPhoto);
         imgSelectedFoundItem = findViewById(R.id.imgSelectedFoundItem);
 
-        btnBackHomeFound.setOnClickListener(v -> {
-            Intent intent = new Intent(ReportFoundActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-            finish();
-        });
+        if (btnBackHomeFound != null) {
+            btnBackHomeFound.setOnClickListener(v -> finish());
+        }
 
-        btnUploadFoundPhoto.setOnClickListener(v -> showImageOptions());
+        if (btnUploadFoundPhoto != null) {
+            btnUploadFoundPhoto.setOnClickListener(v -> showImageOptions());
+        }
 
-        btnSubmitFound.setOnClickListener(v -> submitFoundItem());
+        if (btnSubmitFound != null) {
+            btnSubmitFound.setOnClickListener(v -> submitFoundItem());
+        }
     }
 
     private void showImageOptions() {

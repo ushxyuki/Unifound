@@ -15,39 +15,36 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class ViewReportsActivity extends AppCompatActivity {
 
-    View btnBackReports;
+    private View btnBackReports;
+    private TextInputEditText etSearchReports;
+    private TextView chipAll, chipLost, chipFound;
+    private View cardLostBackpack, cardFoundKeychain, cardLostCharger, cardFoundBottle;
+    private TextView tvEmptyState;
 
-    TextInputEditText etSearchReports;
+    private String selectedFilter = "All";
 
-    TextView chipAll, chipLost, chipFound;
-
-    View cardLostBackpack, cardFoundKeychain, cardLostCharger, cardFoundBottle;
-    TextView tvEmptyState;
-
-    String selectedFilter = "All";
-
-    String[] itemNames = {
+    private String[] itemNames = {
             "Black Backpack",
             "Silver Keychain",
             "Laptop Charger",
             "Water Bottle"
     };
 
-    String[] itemLocations = {
+    private String[] itemLocations = {
             "Library - Floor 2",
             "Main Cafeteria",
             "Computer Lab",
             "Sports Centre"
     };
 
-    String[] itemTypes = {
+    private String[] itemTypes = {
             "Lost",
             "Found",
             "Lost",
             "Found"
     };
 
-    View[] itemCards;
+    private View[] itemCards;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +52,14 @@ public class ViewReportsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view_reports);
 
         btnBackReports = findViewById(R.id.btnBackReports);
-
         etSearchReports = findViewById(R.id.etSearchReports);
-
         chipAll = findViewById(R.id.chipAll);
         chipLost = findViewById(R.id.chipLost);
         chipFound = findViewById(R.id.chipFound);
-
         cardLostBackpack = findViewById(R.id.cardLostBackpack);
         cardFoundKeychain = findViewById(R.id.cardFoundKeychain);
         cardLostCharger = findViewById(R.id.cardLostCharger);
         cardFoundBottle = findViewById(R.id.cardFoundBottle);
-
         tvEmptyState = findViewById(R.id.tvEmptyState);
 
         itemCards = new View[]{
@@ -76,7 +69,9 @@ public class ViewReportsActivity extends AppCompatActivity {
                 cardFoundBottle
         };
 
-        btnBackReports.setOnClickListener(v -> finish());
+        if (btnBackReports != null) {
+            btnBackReports.setOnClickListener(v -> finish());
+        }
 
         chipAll.setOnClickListener(v -> {
             selectedFilter = "All";
@@ -169,13 +164,11 @@ public class ViewReportsActivity extends AppCompatActivity {
 
     private void filterReports() {
         String searchText = "";
-
         if (etSearchReports.getText() != null) {
             searchText = etSearchReports.getText().toString().trim().toLowerCase();
         }
 
         int visibleCount = 0;
-
         for (int i = 0; i < itemCards.length; i++) {
             boolean matchesType =
                     selectedFilter.equals("All") ||
@@ -245,7 +238,6 @@ public class ViewReportsActivity extends AppCompatActivity {
             String contactPhone
     ) {
         Intent intent = new Intent(ViewReportsActivity.this, ItemDetailsActivity.class);
-
         intent.putExtra("icon", icon);
         intent.putExtra("title", title);
         intent.putExtra("status", status);
@@ -256,7 +248,6 @@ public class ViewReportsActivity extends AppCompatActivity {
         intent.putExtra("contactName", contactName);
         intent.putExtra("contactEmail", contactEmail);
         intent.putExtra("contactPhone", contactPhone);
-
         startActivity(intent);
     }
 }

@@ -30,7 +30,9 @@
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="38sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
                 android:layout_width="0dp"

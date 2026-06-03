@@ -9,22 +9,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lostandfound">
 
+        <activity android:name=".LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".CreateAccountActivity" />
+        <activity android:name=".ProfileActivity" />
+
+        <activity android:name=".MainActivity" />
         <activity android:name=".ReportLostActivity" />
         <activity android:name=".ReportFoundActivity" />
         <activity android:name=".ViewReportsActivity" />
         <activity android:name=".ItemDetailsActivity" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-
-            </intent-filter>
-
-        </activity>
 
     </application>
 
