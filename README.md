@@ -16,3 +16,10 @@ The app currently uses demo data because it is not connected to a real universit
 - Admin dashboard for staff review
 - Email notifications for item updates
 - Search and category filtering improvements
+
+## Development Update - 2026-06-08
+- Improved UniFound lost and found report flow.
+- Planned safer Contact Office process for item recovery.
+- Checked Firebase Authentication and Firestore feature requirements.
+- Prepared final testing checklist for report submission.
+
