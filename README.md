@@ -23,3 +23,6 @@ The app currently uses demo data because it is not connected to a real universit
 - Checked Firebase Authentication and Firestore feature requirements.
 - Prepared final testing checklist for report submission.
 
+
+Final testing note: verified login session, report submission, profile details, and item image fallback requirements.
+
