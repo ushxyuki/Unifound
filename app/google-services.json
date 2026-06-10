@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "914474628849",
+    "project_id": "unifound-84fe6",
+    "storage_bucket": "unifound-84fe6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:914474628849:android:2305574bf82cfbff981b50",
+        "android_client_info": {
+          "package_name": "com.example.lostandfound"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBneratTkqqb1i1SHb-dkQKpIB48tsOb6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
