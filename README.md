@@ -1,28 +1,30 @@
 # University Lost and Found App
 
-This Android application is a prototype for a university lost and found system. 
-The app is designed to help students report lost items, report found items, browse reports, and view item details.
+UniFound is an Android prototype designed to support a university lost-and-found process. The application allows students to report lost items, report found items, browse submitted reports, and view item details in a simple mobile interface.
 
-## Prototype Scope
+## Project Overview
 
-This version focuses on the mobile user interface, navigation flow, report forms, image upload interaction, and item browsing experience.
+The aim of this project is to provide a structured digital solution for managing lost-and-found reports within a university environment. The app focuses on improving accessibility, reducing manual reporting, and making item recovery easier for students.
 
-The app currently uses demo data because it is not connected to a real university staff system. In a real deployment, reports would be stored in a database and reviewed by authorised Lost and Found staff.
+## Key Features
 
-## Planned Improvements
+* Student login and account creation
+* Lost item reporting
+* Found item reporting
+* Report browsing and item details
+* Image support for item reports
+* Profile page with student information
+* Office-based contact process for safer item recovery
 
-- Firebase Authentication for student login
-- Firestore database for storing reports
-- Admin dashboard for staff review
-- Email notifications for item updates
-- Search and category filtering improvements
+## Technical Implementation
 
-## Development Update - 2026-06-08
-- Improved UniFound lost and found report flow.
-- Planned safer Contact Office process for item recovery.
-- Checked Firebase Authentication and Firestore feature requirements.
-- Prepared final testing checklist for report submission.
+The app is developed in Android Studio using Java. Firebase services are used to support authentication and cloud-based data storage. Firestore is used to store user profiles and lost-and-found report records.
 
+## Privacy and Safety
 
-Final testing note: verified login session, report submission, profile details, and item image fallback requirements.
+To protect student privacy, item recovery is handled through the Lost and Found Office rather than publicly exposing personal contact details. This makes the process safer and more suitable for a university environment.
+
+## Development Status
+
+This prototype demonstrates the main mobile workflow, including authentication, report submission, report browsing, item detail viewing, and profile management. Future development could include a staff admin dashboard, advanced search, notifications, and improved report verification.
 
