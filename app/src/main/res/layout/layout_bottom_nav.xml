@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottomNavRoot"
     android:layout_width="match_parent"
     android:layout_height="112dp"
@@ -49,7 +50,7 @@
                     android:layout_height="24dp"
                     android:contentDescription="Home"
                     android:src="@drawable/ic_home"
-                    android:tint="@color/bottom_nav_unselected" />
+                    app:tint="@color/bottom_nav_unselected" />
 
                 <TextView
                     android:id="@+id/navHomeLabel"
@@ -92,7 +93,7 @@
                     android:layout_height="24dp"
                     android:contentDescription="Reports"
                     android:src="@drawable/ic_reports"
-                    android:tint="@color/bottom_nav_unselected" />
+                    app:tint="@color/bottom_nav_unselected" />
 
                 <TextView
                     android:id="@+id/navReportsLabel"
@@ -139,7 +140,7 @@
                     android:layout_height="24dp"
                     android:contentDescription="Messages"
                     android:src="@drawable/ic_messages"
-                    android:tint="@color/bottom_nav_unselected" />
+                    app:tint="@color/bottom_nav_unselected" />
 
                 <TextView
                     android:id="@+id/navMessagesLabel"
@@ -182,7 +183,7 @@
                     android:layout_height="24dp"
                     android:contentDescription="Profile"
                     android:src="@drawable/ic_profile"
-                    android:tint="@color/bottom_nav_unselected" />
+                    app:tint="@color/bottom_nav_unselected" />
 
                 <TextView
                     android:id="@+id/navProfileLabel"
@@ -209,5 +210,5 @@
         android:elevation="16dp"
         android:padding="15dp"
         android:src="@drawable/ic_plus"
-        android:tint="@android:color/white" />
+        app:tint="@android:color/white" />
 </FrameLayout>

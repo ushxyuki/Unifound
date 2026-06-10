@@ -64,12 +64,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/card_light"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@color/card_light"
                         android:orientation="vertical"
                         android:padding="16dp">
 
@@ -77,7 +81,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Admin"
-                            android:textColor="#2563EB"
+                            android:textColor="@color/text_blue"
                             android:textStyle="bold" />
 
                         <TextView
@@ -85,7 +89,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Your report has been updated"
-                            android:textColor="#111827" />
+                            android:textColor="@color/text_dark" />
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -94,12 +99,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/card_light"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@color/card_light"
                         android:orientation="vertical"
                         android:padding="16dp">
 
@@ -107,7 +116,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Student Services"
-                            android:textColor="#2563EB"
+                            android:textColor="@color/text_blue"
                             android:textStyle="bold" />
 
                         <TextView
@@ -115,7 +124,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Please visit Lost &amp; Found Office"
-                            android:textColor="#111827" />
+                            android:textColor="@color/text_dark" />
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -124,12 +134,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/card_light"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/card_stroke"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@color/card_light"
                         android:orientation="vertical"
                         android:padding="16dp">
 
@@ -137,7 +151,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="System"
-                            android:textColor="#2563EB"
+                            android:textColor="@color/text_blue"
                             android:textStyle="bold" />
 
                         <TextView
@@ -145,7 +159,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="Your password was changed"
-                            android:textColor="#111827" />
+                            android:textColor="@color/text_dark" />
+
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 

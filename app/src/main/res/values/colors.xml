@@ -1,35 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Basic Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Main App Colors -->
     <color name="app_blue">#2563EB</color>
     <color name="app_blue_dark">#1D4ED8</color>
-    <color name="app_background">#F8FAFC</color>
+    <color name="app_background">#F4F7FB</color>
     <color name="app_card_white">#FFFFFF</color>
 
+    <!-- Card Colors -->
+    <color name="card_light">#F3EAF7</color>
+    <color name="card_stroke">#D8C7E3</color>
+
+    <!-- Text Colors -->
     <color name="app_text_dark">#0F172A</color>
     <color name="app_text_medium">#334155</color>
     <color name="app_text_light">#64748B</color>
     <color name="app_hint">#94A3B8</color>
 
+    <color name="text_dark">#0F172A</color>
+    <color name="text_medium">#64748B</color>
+    <color name="text_blue">#1D4ED8</color>
+
+    <!-- Borders and Soft Backgrounds -->
     <color name="app_border">#E2E8F0</color>
     <color name="app_soft_blue">#DBEAFE</color>
 
+    <!-- Lost / Found Status Colors -->
     <color name="app_lost_bg">#FEE2E2</color>
     <color name="app_lost_text">#B91C1C</color>
-
     <color name="app_found_bg">#DCFCE7</color>
     <color name="app_found_text">#047857</color>
+
+    <color name="status_lost">#DC2626</color>
+    <color name="status_found">#047857</color>
     <color name="success_green">#047857</color>
     <color name="danger_red">#B91C1C</color>
 
-    <!-- Professional Bottom Navigation Colors -->
+    <!-- Bottom Navigation Colors -->
     <color name="bottom_nav_background">#EFF6FF</color>
     <color name="bottom_nav_selected">#2563EB</color>
     <color name="bottom_nav_unselected">#64748B</color>
     <color name="bottom_nav_indicator">#DBEAFE</color>
     <color name="bottom_nav_border">#BFDBFE</color>
 
+    <!-- Chips -->
     <color name="chip_background">#DBEAFE</color>
+
 </resources>

@@ -2,85 +2,61 @@ package com.example.lostandfound;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ViewReportsActivity extends AppCompatActivity {
 
+    private static final String TAG = "ViewReportsActivity";
+
     private View btnBackReports;
     private TextInputEditText etSearchReports;
-    private TextView chipAll, chipLost, chipFound;
-    private View cardLostBackpack, cardFoundKeychain, cardLostCharger, cardFoundBottle;
+    private TextView chipAll;
+    private TextView chipLost;
+    private TextView chipFound;
+    private LinearLayout reportsContainer;
     private TextView tvEmptyState;
 
+    private final List<ReportListItem> allReports = new ArrayList<>();
     private String selectedFilter = "All";
-
-    private String[] itemNames = {
-            "Black Backpack",
-            "Silver Keychain",
-            "Laptop Charger",
-            "Water Bottle"
-    };
-
-    private String[] itemLocations = {
-            "Library - Floor 2",
-            "Main Cafeteria",
-            "Computer Lab",
-            "Sports Centre"
-    };
-
-    private String[] itemTypes = {
-            "Lost",
-            "Found",
-            "Lost",
-            "Found"
-    };
-
-    private String[] itemDates = {
-            "01/06/2026",
-            "01/06/2026",
-            "31/05/2026",
-            "30/05/2026"
-    };
-
-    private String[] itemCategories = {
-            "Bag",
-            "Keys",
-            "Electronics",
-            "Bottle"
-    };
-
-    private String[] itemDescriptions = {
-            "Black Nike backpack with a laptop charger inside. Last seen near the library study area.",
-            "Silver keychain found near the cafeteria seating area.",
-            "Black laptop charger lost in the computer lab.",
-            "Water bottle found at the sports centre reception area."
-    };
-
-    private String[] itemIcons = {
-            "\uD83C\uDF92",
-            "\uD83D\uDD11",
-            "\uD83D\uDCBB",
-            "\uD83D\uDCA7"
-    };
-
-    private View[] itemCards;
-    private int reportCount = 4;
+    private String currentUid = "";
+    private int loadedLostReportCount = 0;
+    private int loadedFoundReportCount = 0;
+    private boolean lostReportsLoaded = false;
+    private boolean foundReportsLoaded = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,18 +68,8 @@ public class ViewReportsActivity extends AppCompatActivity {
         chipAll = findViewById(R.id.chipAll);
         chipLost = findViewById(R.id.chipLost);
         chipFound = findViewById(R.id.chipFound);
-        cardLostBackpack = findViewById(R.id.cardLostBackpack);
-        cardFoundKeychain = findViewById(R.id.cardFoundKeychain);
-        cardLostCharger = findViewById(R.id.cardLostCharger);
-        cardFoundBottle = findViewById(R.id.cardFoundBottle);
+        reportsContainer = findViewById(R.id.reportsContainer);
         tvEmptyState = findViewById(R.id.tvEmptyState);
-
-        itemCards = new View[]{
-                cardLostBackpack,
-                cardFoundKeychain,
-                cardLostCharger,
-                cardFoundBottle
-        };
 
         setupBottomNav();
 
@@ -111,23 +77,9 @@ public class ViewReportsActivity extends AppCompatActivity {
             btnBackReports.setOnClickListener(v -> finish());
         }
 
-        chipAll.setOnClickListener(v -> {
-            selectedFilter = "All";
-            updateChipStyle();
-            filterReports();
-        });
-
-        chipLost.setOnClickListener(v -> {
-            selectedFilter = "Lost";
-            updateChipStyle();
-            filterReports();
-        });
-
-        chipFound.setOnClickListener(v -> {
-            selectedFilter = "Found";
-            updateChipStyle();
-            filterReports();
-        });
+        chipAll.setOnClickListener(v -> setFilter("All"));
+        chipLost.setOnClickListener(v -> setFilter("Lost"));
+        chipFound.setOnClickListener(v -> setFilter("Found"));
 
         etSearchReports.addTextChangedListener(new TextWatcher() {
             @Override
@@ -136,7 +88,7 @@ public class ViewReportsActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterReports();
+                renderReports();
             }
 
             @Override
@@ -144,61 +96,7 @@ public class ViewReportsActivity extends AppCompatActivity {
             }
         });
 
-        cardLostBackpack.setOnClickListener(v -> openItemDetails(
-                "🎒",
-                "Black Backpack",
-                "Lost",
-                "Library - Floor 2",
-                "01/06/2026",
-                "Bag",
-                "Black Nike backpack with a laptop charger inside. Last seen near the library study area.",
-                "Student Services",
-                "lostandfound@university.ac.uk",
-                "Available through university office"
-        ));
-
-        cardFoundKeychain.setOnClickListener(v -> openItemDetails(
-                "🔑",
-                "Silver Keychain",
-                "Found",
-                "Main Cafeteria",
-                "01/06/2026",
-                "Keys",
-                "Silver keychain found near the cafeteria seating area.",
-                "Finder / Student Services",
-                "lostandfound@university.ac.uk",
-                "Available through university office"
-        ));
-
-        cardLostCharger.setOnClickListener(v -> openItemDetails(
-                "💻",
-                "Laptop Charger",
-                "Lost",
-                "Computer Lab",
-                "31/05/2026",
-                "Electronics",
-                "Black laptop charger lost in the computer lab.",
-                "Student Services",
-                "lostandfound@university.ac.uk",
-                "Available through university office"
-        ));
-
-        cardFoundBottle.setOnClickListener(v -> openItemDetails(
-                "💧",
-                "Water Bottle",
-                "Found",
-                "Sports Centre",
-                "30/05/2026",
-                "Bottle",
-                "Water bottle found at the sports centre reception area.",
-                "Finder / Student Services",
-                "lostandfound@university.ac.uk",
-                "Available through university office"
-        ));
-
-        setupReportCardClicks();
         updateChipStyle();
-        filterReports();
         loadReportsFromFirestore();
     }
 
@@ -206,160 +104,404 @@ public class ViewReportsActivity extends AppCompatActivity {
         BottomNavHelper.setup(this, BottomNavHelper.Tab.REPORTS);
     }
 
-    private void setupReportCardClicks() {
-        for (int i = 0; i < itemCards.length; i++) {
-            final int index = i;
-            itemCards[i].setOnClickListener(v -> openReportDetails(index));
-        }
-    }
-
-    private void openReportDetails(int index) {
-        if (index < 0 || index >= reportCount) {
-            return;
-        }
-
-        openItemDetails(
-                itemIcons[index],
-                itemNames[index],
-                itemTypes[index],
-                itemLocations[index],
-                itemDates[index],
-                itemCategories[index],
-                itemDescriptions[index],
-                "Student Services",
-                "lostandfound@university.ac.uk",
-                "Available through university office"
-        );
+    private void setFilter(String filter) {
+        selectedFilter = filter;
+        updateChipStyle();
+        renderReports();
     }
 
     private void loadReportsFromFirestore() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        List<ReportListItem> reports = new ArrayList<>();
+        Log.d(TAG, "Starting loadReportsFromFirestore");
+
+        lostReportsLoaded = false;
+        foundReportsLoaded = false;
+        loadedLostReportCount = 0;
+        loadedFoundReportCount = 0;
+        currentUid = "";
+        allReports.clear();
+        reportsContainer.removeAllViews();
+        tvEmptyState.setVisibility(View.GONE);
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Log.w(TAG, "No authenticated user. Showing empty My Reports state.");
+            Toast.makeText(this, "Please log in to view your reports", Toast.LENGTH_SHORT).show();
+            lostReportsLoaded = true;
+            foundReportsLoaded = true;
+            renderReports();
+            return;
+        }
+
+        currentUid = currentUser.getUid();
+        Log.d(TAG, "Loading my reports for currentUid=" + currentUid);
+
+        FirebaseFirestore db = FirestoreProvider.getFirestore();
 
         db.collection("lost_reports")
+                .whereEqualTo("userId", currentUid)
                 .get()
                 .addOnSuccessListener(lostSnapshot -> {
-                    addSnapshotReports(reports, lostSnapshot, "Lost");
-                    loadFoundReports(db, reports);
-                })
-                .addOnFailureListener(e -> loadFoundReports(db, reports));
-    }
-
-    private void loadFoundReports(FirebaseFirestore db, List<ReportListItem> reports) {
-        db.collection("found_reports")
-                .get()
-                .addOnSuccessListener(foundSnapshot -> {
-                    addSnapshotReports(reports, foundSnapshot, "Found");
-                    if (!reports.isEmpty()) {
-                        showFirestoreReports(reports);
+                    loadedLostReportCount = lostSnapshot.size();
+                    Log.d(TAG, "My lost reports loaded: " + loadedLostReportCount);
+                    addSnapshotReports(allReports, lostSnapshot, "Lost");
+                    lostReportsLoaded = true;
+                    if (foundReportsLoaded) {
+                        onBothQueriesComplete();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    if (!reports.isEmpty()) {
-                        showFirestoreReports(reports);
+                    Log.e(TAG, "Lost reports query failed: " + e.getMessage(), e);
+                    Toast.makeText(ViewReportsActivity.this, "Error loading lost reports: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    lostReportsLoaded = true;
+                    if (foundReportsLoaded) {
+                        onBothQueriesComplete();
                     }
                 });
+
+        db.collection("found_reports")
+                .whereEqualTo("userId", currentUid)
+                .get()
+                .addOnSuccessListener(foundSnapshot -> {
+                    loadedFoundReportCount = foundSnapshot.size();
+                    Log.d(TAG, "My found reports loaded: " + loadedFoundReportCount);
+                    addSnapshotReports(allReports, foundSnapshot, "Found");
+                    foundReportsLoaded = true;
+                    if (lostReportsLoaded) {
+                        onBothQueriesComplete();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Found reports query failed: " + e.getMessage(), e);
+                    Toast.makeText(ViewReportsActivity.this, "Error loading found reports: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    foundReportsLoaded = true;
+                    if (lostReportsLoaded) {
+                        onBothQueriesComplete();
+                    }
+                });
+    }
+    
+    private void onBothQueriesComplete() {
+        Collections.sort(allReports, (first, second) ->
+                Long.compare(second.createdAtMillis, first.createdAtMillis)
+        );
+        Log.d(TAG, "currentUid=" + currentUid
+                + ", my lost reports=" + loadedLostReportCount
+                + ", my found reports=" + loadedFoundReportCount
+                + ", my total reports=" + allReports.size());
+        renderReports();
     }
 
     private void addSnapshotReports(List<ReportListItem> reports, QuerySnapshot snapshot, String fallbackStatus) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
-            if (reports.size() >= itemCards.length) {
-                return;
-            }
-
-            String itemName = getDocumentString(document, "itemName", "");
-            String location = getDocumentString(document, "location", "");
+            String itemName = firstDocumentString(document, "itemName", "title");
             if (itemName.isEmpty()) {
-                continue;
+                itemName = "Untitled item";
             }
 
             String status = normalizeStatus(getDocumentString(document, "status", fallbackStatus));
+            String reporterEmail = getDocumentString(document, "reporterEmail", "");
+            String contactName = getDocumentString(document, "contactName", "Lost & Found Office");
+            String contactEmail = getDocumentString(document, "contactEmail", "");
+            if (contactEmail.isEmpty()) {
+                contactEmail = reporterEmail;
+            }
+
             reports.add(new ReportListItem(
-                    getIconForStatus(status),
                     itemName,
-                    location,
                     status,
-                    getDocumentString(document, "date", ""),
+                    getDocumentString(document, "location", ""),
+                    firstDocumentString(document, "date", "dateTime"),
+                    getDocumentString(document, "time", ""),
                     getDocumentString(document, "category", ""),
-                    getDocumentString(document, "description", "")
+                    getDocumentString(document, "description", ""),
+                    contactName,
+                    contactEmail,
+                    getDocumentString(document, "contactPhone", ""),
+                    reporterEmail,
+                    getDocumentString(document, "imageUrl", ""),
+                    getCreatedAtMillis(document)
             ));
         }
     }
 
-    private void showFirestoreReports(List<ReportListItem> reports) {
-        reportCount = Math.min(reports.size(), itemCards.length);
+    private void renderReports() {
+        reportsContainer.removeAllViews();
 
-        for (int i = 0; i < itemCards.length; i++) {
-            if (i >= reportCount) {
-                itemCards[i].setVisibility(View.GONE);
+        String searchText = "";
+        if (etSearchReports.getText() != null) {
+            searchText = etSearchReports.getText().toString().trim().toLowerCase();
+        }
+
+        int visibleCount = 0;
+        for (ReportListItem report : allReports) {
+            if (!matchesFilter(report) || !matchesSearch(report, searchText)) {
                 continue;
             }
 
-            ReportListItem report = reports.get(i);
-            itemIcons[i] = report.icon;
-            itemNames[i] = report.itemName;
-            itemLocations[i] = report.location;
-            itemTypes[i] = report.status;
-            itemDates[i] = report.date;
-            itemCategories[i] = report.category;
-            itemDescriptions[i] = report.description;
-            updateReportCard(itemCards[i], report);
+            reportsContainer.addView(createReportCard(report));
+            visibleCount++;
         }
 
-        setupReportCardClicks();
-        filterReports();
+        boolean bothQueriesFinished = lostReportsLoaded && foundReportsLoaded;
+        tvEmptyState.setVisibility(bothQueriesFinished && visibleCount == 0 ? View.VISIBLE : View.GONE);
+        Log.d(TAG, "Visible reports after filtering: " + visibleCount);
     }
 
-    private void updateReportCard(View card, ReportListItem report) {
-        List<TextView> textViews = new ArrayList<>();
-        collectTextViews(card, textViews);
-
-        if (textViews.size() > 1) {
-            textViews.get(1).setText(report.itemName);
-        }
-        if (textViews.size() > 2) {
-            textViews.get(2).setText(report.location);
-        }
-        if (textViews.size() > 3 && !report.date.isEmpty()) {
-            textViews.get(3).setText(report.date);
-        }
-        if (textViews.size() > 4) {
-            TextView statusView = textViews.get(4);
-            statusView.setText(report.status);
-            styleStatusView(statusView, report.status);
-        }
+    private boolean matchesFilter(ReportListItem report) {
+        return "All".equals(selectedFilter)
+                || report.status.equalsIgnoreCase(selectedFilter);
     }
 
-    private void collectTextViews(View view, List<TextView> textViews) {
-        if (view instanceof TextView) {
-            textViews.add((TextView) view);
+    private boolean matchesSearch(ReportListItem report, String searchText) {
+        if (searchText.isEmpty()) {
+            return true;
+        }
+
+        return report.itemName.toLowerCase().contains(searchText)
+                || report.location.toLowerCase().contains(searchText)
+                || report.status.toLowerCase().contains(searchText)
+                || report.category.toLowerCase().contains(searchText)
+                || report.description.toLowerCase().contains(searchText);
+    }
+
+    private MaterialCardView createReportCard(ReportListItem report) {
+        MaterialCardView card = new MaterialCardView(this);
+        card.setCardBackgroundColor(ContextCompat.getColor(this, R.color.app_card_white));
+        card.setStrokeColor(ContextCompat.getColor(this, R.color.card_stroke));
+        card.setStrokeWidth(dp(1));
+        card.setRadius(dp(16));
+        card.setCardElevation(dp(3));
+        card.setClickable(true);
+        card.setFocusable(true);
+        card.setOnClickListener(v -> openItemDetails(report));
+
+        LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        cardParams.setMargins(0, dp(14), 0, 0);
+        card.setLayoutParams(cardParams);
+
+        LinearLayout row = new LinearLayout(this);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setPadding(dp(16), dp(16), dp(16), dp(16));
+
+        ImageView imageView = new ImageView(this);
+        LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(dp(60), dp(60));
+        imageView.setLayoutParams(imageParams);
+        imageView.setContentDescription("Item image");
+        bindReportImage(imageView, report);
+        row.addView(imageView);
+
+        LinearLayout textColumn = new LinearLayout(this);
+        textColumn.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+        );
+        textParams.setMargins(dp(14), 0, dp(12), 0);
+        textColumn.setLayoutParams(textParams);
+
+        TextView titleView = makeTextView(report.itemName, R.color.text_dark, 16, true);
+        textColumn.addView(titleView);
+
+        TextView locationView = makeTextView(emptyFallback(report.location, "Location not added"), R.color.text_medium, 13, false);
+        LinearLayout.LayoutParams locationParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        locationParams.setMargins(0, dp(4), 0, 0);
+        locationView.setLayoutParams(locationParams);
+        textColumn.addView(locationView);
+
+        TextView dateView = makeTextView(formatDateTime(report.date, report.time), R.color.text_medium, 12, false);
+        LinearLayout.LayoutParams dateParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        dateParams.setMargins(0, dp(3), 0, 0);
+        dateView.setLayoutParams(dateParams);
+        textColumn.addView(dateView);
+
+        row.addView(textColumn);
+
+        TextView statusView = makeTextView(report.status, getStatusTextColor(report.status), 12, true);
+        statusView.setGravity(Gravity.CENTER);
+        statusView.setMinWidth(dp(74));
+        statusView.setMinHeight(dp(34));
+        statusView.setPadding(dp(14), 0, dp(14), 0);
+        statusView.setBackground(makeRoundedBackground(getStatusBackgroundColor(report.status)));
+        row.addView(statusView);
+
+        card.addView(row);
+        return card;
+    }
+
+    private void bindReportImage(ImageView imageView, ReportListItem report) {
+        int defaultIconRes = getDefaultIconRes(report.status, report.category);
+
+        if (report.imageUrl.isEmpty()) {
+            showDefaultImage(imageView, report.status, defaultIconRes);
             return;
         }
 
-        if (view instanceof ViewGroup) {
-            ViewGroup group = (ViewGroup) view;
-            for (int i = 0; i < group.getChildCount(); i++) {
-                collectTextViews(group.getChildAt(i), textViews);
-            }
+        imageView.setBackgroundColor(Color.TRANSPARENT);
+        imageView.setColorFilter(null);
+        imageView.setPadding(0, 0, 0, 0);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+        Glide.with(this)
+                .load(report.imageUrl)
+                .placeholder(defaultIconRes)
+                .error(defaultIconRes)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(
+                            @Nullable GlideException e,
+                            Object model,
+                            Target<Drawable> target,
+                            boolean isFirstResource
+                    ) {
+                        showDefaultImage(imageView, report.status, defaultIconRes);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(
+                            Drawable resource,
+                            Object model,
+                            Target<Drawable> target,
+                            DataSource dataSource,
+                            boolean isFirstResource
+                    ) {
+                        return false;
+                    }
+                })
+                .into(imageView);
+    }
+
+    private void showDefaultImage(ImageView imageView, String status, int drawableRes) {
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageView.setPadding(dp(14), dp(14), dp(14), dp(14));
+        imageView.setImageResource(drawableRes);
+        imageView.setColorFilter(ContextCompat.getColor(this, getStatusTextColor(status)));
+        imageView.setBackgroundResource("Found".equalsIgnoreCase(status)
+                ? R.drawable.bg_icon_soft_green
+                : R.drawable.bg_icon_soft_blue);
+    }
+
+    private TextView makeTextView(String text, int colorRes, int textSizeSp, boolean bold) {
+        TextView textView = new TextView(this);
+        textView.setText(text);
+        textView.setTextColor(ContextCompat.getColor(this, colorRes));
+        textView.setTextSize(textSizeSp);
+        if (bold) {
+            textView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        }
+        return textView;
+    }
+
+    private void updateChipStyle() {
+        resetChip(chipAll);
+        resetChip(chipLost);
+        resetChip(chipFound);
+
+        if ("All".equals(selectedFilter)) {
+            selectChip(chipAll);
+        } else if ("Lost".equals(selectedFilter)) {
+            selectChip(chipLost);
+        } else {
+            selectChip(chipFound);
         }
     }
 
-    private void styleStatusView(TextView statusView, String status) {
-        if ("Found".equalsIgnoreCase(status)) {
-            statusView.setTextColor(Color.parseColor("#16A34A"));
-            statusView.setBackground(makeRoundedBackground("#DCFCE7"));
-        } else {
-            statusView.setTextColor(Color.parseColor("#DC2626"));
-            statusView.setBackground(makeRoundedBackground("#FEE2E2"));
+    private void selectChip(TextView chip) {
+        chip.setTextColor(ContextCompat.getColor(this, android.R.color.white));
+        chip.setBackground(makeRoundedBackground(R.color.app_blue));
+    }
+
+    private void resetChip(TextView chip) {
+        chip.setTextColor(ContextCompat.getColor(this, R.color.text_blue));
+        chip.setBackground(makeRoundedBackground(R.color.app_soft_blue));
+    }
+
+    private GradientDrawable makeRoundedBackground(int colorRes) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(ContextCompat.getColor(this, colorRes));
+        drawable.setCornerRadius(dp(50));
+        return drawable;
+    }
+
+    private int getStatusTextColor(String status) {
+        return "Found".equalsIgnoreCase(status) ? R.color.status_found : R.color.status_lost;
+    }
+
+    private int getStatusBackgroundColor(String status) {
+        return "Found".equalsIgnoreCase(status) ? R.color.app_found_bg : R.color.app_lost_bg;
+    }
+
+    private int getDefaultIconRes(String status, String category) {
+        String normalizedCategory = category == null ? "" : category.toLowerCase();
+        if (normalizedCategory.contains("key")) {
+            return R.drawable.ic_key;
         }
+        if (normalizedCategory.contains("bottle")) {
+            return R.drawable.ic_bottle;
+        }
+        if (normalizedCategory.contains("laptop") || normalizedCategory.contains("electronic")) {
+            return R.drawable.ic_laptop;
+        }
+        if (normalizedCategory.contains("bag") || normalizedCategory.contains("backpack")) {
+            return R.drawable.ic_bag;
+        }
+        return "Found".equalsIgnoreCase(status) ? R.drawable.ic_report_found : R.drawable.ic_bag;
+    }
+
+    private void openItemDetails(ReportListItem report) {
+        Intent intent = new Intent(ViewReportsActivity.this, ItemDetailsActivity.class);
+        intent.putExtra("title", report.itemName);
+        intent.putExtra("itemName", report.itemName);
+        intent.putExtra("status", report.status);
+        intent.putExtra("location", report.location);
+        intent.putExtra("date", report.date);
+        intent.putExtra("time", report.time);
+        intent.putExtra("category", report.category);
+        intent.putExtra("description", report.description);
+        intent.putExtra("contactName", report.contactName);
+        intent.putExtra("contactEmail", report.contactEmail);
+        intent.putExtra("contactPhone", report.contactPhone);
+        intent.putExtra("reporterEmail", report.reporterEmail);
+        intent.putExtra("imageUrl", report.imageUrl);
+        startActivity(intent);
     }
 
     private String getDocumentString(DocumentSnapshot document, String field, String fallback) {
-        String value = document.getString(field);
-        if (value == null || value.trim().isEmpty()) {
+        Object rawValue = document.get(field);
+        if (rawValue == null) {
             return fallback;
         }
-        return value.trim();
+        String value = String.valueOf(rawValue).trim();
+        if (value.isEmpty()) {
+            return fallback;
+        }
+        return value;
+    }
+
+    private String firstDocumentString(DocumentSnapshot document, String... fields) {
+        for (String field : fields) {
+            String value = getDocumentString(document, field, "");
+            if (!value.isEmpty()) {
+                return value;
+            }
+        }
+        return "";
+    }
+
+    private long getCreatedAtMillis(DocumentSnapshot document) {
+        Timestamp timestamp = document.getTimestamp("createdAt");
+        return timestamp == null ? 0L : timestamp.toDate().getTime();
     }
 
     private String normalizeStatus(String status) {
@@ -369,132 +511,75 @@ public class ViewReportsActivity extends AppCompatActivity {
         return "Lost";
     }
 
-    private String getIconForStatus(String status) {
-        if ("Found".equalsIgnoreCase(status)) {
-            return "\uD83D\uDD0E";
+    private String formatDateTime(String date, String time) {
+        boolean hasDate = date != null && !date.trim().isEmpty();
+        boolean hasTime = time != null && !time.trim().isEmpty();
+        if (hasDate && hasTime) {
+            return date.trim() + " at " + time.trim();
         }
-        return "\uD83D\uDCE6";
-    }
-
-    private void filterReports() {
-        String searchText = "";
-        if (etSearchReports.getText() != null) {
-            searchText = etSearchReports.getText().toString().trim().toLowerCase();
+        if (hasDate) {
+            return date.trim();
         }
-
-        int visibleCount = 0;
-        for (int i = 0; i < itemCards.length; i++) {
-            if (i >= reportCount) {
-                itemCards[i].setVisibility(View.GONE);
-                continue;
-            }
-
-            boolean matchesType =
-                    selectedFilter.equals("All") ||
-                            itemTypes[i].equalsIgnoreCase(selectedFilter);
-
-            boolean matchesSearch =
-                    itemNames[i].toLowerCase().contains(searchText) ||
-                            itemLocations[i].toLowerCase().contains(searchText) ||
-                            itemTypes[i].toLowerCase().contains(searchText);
-
-            if (matchesType && matchesSearch) {
-                itemCards[i].setVisibility(View.VISIBLE);
-                visibleCount++;
-            } else {
-                itemCards[i].setVisibility(View.GONE);
-            }
+        if (hasTime) {
+            return time.trim();
         }
+        return "Date not available";
+    }
 
-        if (visibleCount == 0) {
-            tvEmptyState.setVisibility(View.VISIBLE);
-        } else {
-            tvEmptyState.setVisibility(View.GONE);
+    private String emptyFallback(String value, String fallback) {
+        if (value == null || value.trim().isEmpty()) {
+            return fallback;
         }
+        return value.trim();
     }
 
-    private void updateChipStyle() {
-        resetChip(chipAll);
-        resetChip(chipLost);
-        resetChip(chipFound);
-
-        if (selectedFilter.equals("All")) {
-            selectChip(chipAll);
-        } else if (selectedFilter.equals("Lost")) {
-            selectChip(chipLost);
-        } else {
-            selectChip(chipFound);
-        }
-    }
-
-    private void selectChip(TextView chip) {
-        chip.setTextColor(Color.WHITE);
-        chip.setBackground(makeRoundedBackground("#2563EB"));
-    }
-
-    private void resetChip(TextView chip) {
-        chip.setTextColor(Color.parseColor("#2563EB"));
-        chip.setBackground(makeRoundedBackground("#DBEAFE"));
-    }
-
-    private GradientDrawable makeRoundedBackground(String color) {
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setColor(Color.parseColor(color));
-        drawable.setCornerRadius(50);
-        return drawable;
-    }
-
-    private void openItemDetails(
-            String icon,
-            String title,
-            String status,
-            String location,
-            String date,
-            String category,
-            String description,
-            String contactName,
-            String contactEmail,
-            String contactPhone
-    ) {
-        Intent intent = new Intent(ViewReportsActivity.this, ItemDetailsActivity.class);
-        intent.putExtra("icon", icon);
-        intent.putExtra("title", title);
-        intent.putExtra("status", status);
-        intent.putExtra("location", location);
-        intent.putExtra("date", date);
-        intent.putExtra("category", category);
-        intent.putExtra("description", description);
-        intent.putExtra("contactName", contactName);
-        intent.putExtra("contactEmail", contactEmail);
-        intent.putExtra("contactPhone", contactPhone);
-        startActivity(intent);
+    private int dp(int value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
     }
 
     private static class ReportListItem {
-        final String icon;
         final String itemName;
-        final String location;
         final String status;
+        final String location;
         final String date;
+        final String time;
         final String category;
         final String description;
+        final String contactName;
+        final String contactEmail;
+        final String contactPhone;
+        final String reporterEmail;
+        final String imageUrl;
+        final long createdAtMillis;
 
         ReportListItem(
-                String icon,
                 String itemName,
-                String location,
                 String status,
+                String location,
                 String date,
+                String time,
                 String category,
-                String description
+                String description,
+                String contactName,
+                String contactEmail,
+                String contactPhone,
+                String reporterEmail,
+                String imageUrl,
+                long createdAtMillis
         ) {
-            this.icon = icon;
             this.itemName = itemName;
-            this.location = location;
             this.status = status;
+            this.location = location;
             this.date = date;
+            this.time = time;
             this.category = category;
             this.description = description;
+            this.contactName = contactName;
+            this.contactEmail = contactEmail;
+            this.contactPhone = contactPhone;
+            this.reporterEmail = reporterEmail;
+            this.imageUrl = imageUrl == null ? "" : imageUrl.trim();
+            this.createdAtMillis = createdAtMillis;
         }
     }
 }

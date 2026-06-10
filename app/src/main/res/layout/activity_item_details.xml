@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="@color/app_background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -11,11 +11,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Top App Bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            android:background="#2563EB"
+            android:background="@color/app_blue"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="0dp"
@@ -26,11 +25,12 @@
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:background="@android:color/transparent"
-                android:text="‹"
+                android:text="&lt;"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="38sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
 
             <TextView
                 android:layout_width="0dp"
@@ -40,41 +40,51 @@
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
-
         </LinearLayout>
 
-        <!-- Content -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Main Item Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="26dp"
-                app:cardElevation="4dp"
-                app:strokeColor="#DBEAFE"
+                app:cardBackgroundColor="@color/app_card_white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="3dp"
+                app:strokeColor="@color/app_soft_blue"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/app_card_white"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:padding="24dp">
+
+                    <ImageView
+                        android:id="@+id/imgDetailImage"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="Item photo"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/tvDetailIcon"
                         android:layout_width="96dp"
                         android:layout_height="96dp"
-                        android:background="#DBEAFE"
+                        android:background="@color/app_soft_blue"
                         android:gravity="center"
-                        android:text="🎒"
-                        android:textSize="44sp" />
+                        android:text="Item"
+                        android:textColor="@color/text_blue"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/tvDetailTitle"
@@ -82,8 +92,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:gravity="center"
-                        android:text="Black Backpack"
-                        android:textColor="#0F172A"
+                        android:text="Item details unavailable"
+                        android:textColor="@color/text_dark"
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
@@ -96,37 +106,35 @@
                         android:paddingStart="18dp"
                         android:paddingEnd="18dp"
                         android:text="Lost"
-                        android:textColor="#B91C1C"
+                        android:textColor="@color/status_lost"
                         android:textSize="13sp"
                         android:textStyle="bold" />
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Item Info Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Item Information"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_dark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Item Info Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="22dp"
-                app:cardElevation="4dp"
-                app:strokeColor="#E2E8F0"
+                app:cardBackgroundColor="@color/app_card_white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="3dp"
+                app:strokeColor="@color/app_border"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/app_card_white"
                     android:orientation="vertical"
                     android:padding="18dp">
 
@@ -134,7 +142,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Location"
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_medium"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -143,8 +151,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Library - Floor 2"
-                        android:textColor="#0F172A"
+                        android:text="Location not available"
+                        android:textColor="@color/text_dark"
                         android:textSize="16sp" />
 
                     <View
@@ -152,13 +160,13 @@
                         android:layout_height="1dp"
                         android:layout_marginTop="14dp"
                         android:layout_marginBottom="14dp"
-                        android:background="#E2E8F0" />
+                        android:background="@color/app_border" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Date"
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_medium"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -167,8 +175,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="01/06/2026"
-                        android:textColor="#0F172A"
+                        android:text="Date not available"
+                        android:textColor="@color/text_dark"
                         android:textSize="16sp" />
 
                     <View
@@ -176,13 +184,13 @@
                         android:layout_height="1dp"
                         android:layout_marginTop="14dp"
                         android:layout_marginBottom="14dp"
-                        android:background="#E2E8F0" />
+                        android:background="@color/app_border" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Category"
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_medium"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -191,20 +199,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Bag"
-                        android:textColor="#0F172A"
+                        android:text="Category not available"
+                        android:textColor="@color/text_dark"
                         android:textSize="16sp" />
-
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Description -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Description"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_dark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -212,31 +218,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="22dp"
-                app:cardElevation="4dp"
-                app:strokeColor="#E2E8F0"
+                app:cardBackgroundColor="@color/app_card_white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="3dp"
+                app:strokeColor="@color/app_border"
                 app:strokeWidth="1dp">
 
                 <TextView
                     android:id="@+id/tvDetailDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/app_card_white"
+                    android:lineSpacingExtra="4dp"
                     android:padding="18dp"
-                    android:text="Black Nike backpack with a laptop charger inside. The item was last seen near the library study area."
-                    android:textColor="#334155"
-                    android:textSize="15sp"
-                    android:lineSpacingExtra="4dp" />
-
+                    android:text="No description provided."
+                    android:textColor="@color/app_text_medium"
+                    android:textSize="15sp" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Contact -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Contact Information"
-                android:textColor="#0F172A"
+                android:textColor="@color/text_dark"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -244,23 +249,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="22dp"
-                app:cardElevation="4dp"
-                app:strokeColor="#E2E8F0"
+                app:cardBackgroundColor="@color/app_card_white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="3dp"
+                app:strokeColor="@color/app_border"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/app_card_white"
                     android:orientation="vertical"
                     android:padding="18dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Name / Office"
-                        android:textColor="#64748B"
+                        android:text="Handled by"
+                        android:textColor="@color/text_medium"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -269,8 +275,26 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Student Services"
-                        android:textColor="#0F172A"
+                        android:text="Lost &amp; Found Office"
+                        android:textColor="@color/text_dark"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="Office"
+                        android:textColor="@color/text_medium"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvContactOffice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Student Services Desk"
+                        android:textColor="@color/text_dark"
                         android:textSize="16sp" />
 
                     <TextView
@@ -278,7 +302,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
                         android:text="Email"
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_medium"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -288,7 +312,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="lostandfound@university.ac.uk"
-                        android:textColor="#0F172A"
+                        android:textColor="@color/text_dark"
                         android:textSize="16sp" />
 
                     <TextView
@@ -296,7 +320,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
                         android:text="Phone"
-                        android:textColor="#64748B"
+                        android:textColor="@color/text_medium"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -306,42 +330,49 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="Available through university office"
-                        android:textColor="#0F172A"
+                        android:textColor="@color/text_dark"
                         android:textSize="16sp" />
 
+                    <TextView
+                        android:id="@+id/tvReporterEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="Reporter: "
+                        android:textColor="@color/text_medium"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Safety Note -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                app:cardBackgroundColor="#EFF6FF"
-                app:cardCornerRadius="22dp"
+                app:cardBackgroundColor="@color/bottom_nav_background"
+                app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#BFDBFE"
+                app:strokeColor="@color/bottom_nav_border"
                 app:strokeWidth="1dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/bottom_nav_background"
+                    android:lineSpacingExtra="3dp"
                     android:padding="16dp"
                     android:text="Safety note: To protect students, valuable items should be collected through the university Lost &amp; Found office where possible."
-                    android:textColor="#1E3A8A"
-                    android:textSize="14sp"
-                    android:lineSpacingExtra="3dp" />
-
+                    android:textColor="@color/text_blue"
+                    android:textSize="14sp" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Contact Button -->
             <Button
                 android:id="@+id/btnContactPerson"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
                 android:layout_marginTop="24dp"
-                android:backgroundTint="#2563EB"
-                android:text="Contact / Claim Item"
+                android:backgroundTint="@color/app_blue"
+                android:text="Contact Office"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
@@ -349,5 +380,4 @@
 
         </LinearLayout>
     </LinearLayout>
-
 </androidx.core.widget.NestedScrollView>

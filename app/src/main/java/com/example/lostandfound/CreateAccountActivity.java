@@ -33,7 +33,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_account);
 
         auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        db = FirestoreProvider.getFirestore();
 
         etFullName = findViewById(R.id.etFullName);
         etEmail = findViewById(R.id.etEmail);
@@ -134,11 +134,11 @@ public class CreateAccountActivity extends AppCompatActivity {
 
                         Toast.makeText(
                                 CreateAccountActivity.this,
-                                "Account created successfully. Please login.",
+                                "Account created successfully",
                                 Toast.LENGTH_SHORT
                         ).show();
 
-                        goToLogin();
+                        goToMain();
 
                     } else {
                         String errorMessage = "Failed to create account";
@@ -156,10 +156,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                 });
     }
 
-    private void goToLogin() {
-        auth.signOut();
-
-        Intent intent = new Intent(CreateAccountActivity.this, LoginActivity.class);
+    private void goToMain() {
+        Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
