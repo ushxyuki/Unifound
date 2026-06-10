@@ -169,7 +169,7 @@ future/
 ## Repository Context
 
 ```text
-module: CI660 Advanced Mobile Application Development
+
 type: Native Android coursework prototype
 stack: Java + XML + Firebase
 owner: ushxyuki
