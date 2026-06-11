@@ -54,6 +54,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="20sp"
                         android:textStyle="bold" />
+
                 </LinearLayout>
 
                 <TextView
@@ -86,6 +87,7 @@
                     android:text="Loading account..."
                     android:textColor="@color/app_soft_blue"
                     android:textSize="16sp" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -239,6 +241,7 @@
                             android:textStyle="bold" />
 
                     </LinearLayout>
+
                 </com.google.android.material.card.MaterialCardView>
 
                 <Button
@@ -255,7 +258,9 @@
                     app:backgroundTint="@null" />
 
             </LinearLayout>
+
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
     <include

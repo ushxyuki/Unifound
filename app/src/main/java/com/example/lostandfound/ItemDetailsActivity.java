@@ -19,6 +19,13 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ItemDetailsActivity extends AppCompatActivity {
 
@@ -26,6 +33,16 @@ public class ItemDetailsActivity extends AppCompatActivity {
     private static final String OFFICE_DESK = "Student Services Desk";
     private static final String OFFICE_EMAIL = "lostandfound@university.ac.uk";
     private static final String OFFICE_PHONE = "Available through university office";
+    private static final String[] DATE_FIELD_NAMES = {
+            "date", "dateTime", "selectedDate", "userDate", "lostDate",
+            "foundDate", "itemDate", "reportDate", "uploadDate"
+    };
+    private static final String[] TIMESTAMP_FIELD_NAMES = {
+            "createdAt", "timestamp", "uploadedAt", "uploadTimestamp"
+    };
+    private static final String[] MILLIS_FIELD_NAMES = {
+            "timestampMillis", "createdAtMillis"
+    };
 
     private View btnBackItemDetails;
     private Button btnContactPerson;
@@ -36,11 +53,52 @@ public class ItemDetailsActivity extends AppCompatActivity {
     private TextView tvDetailDescription;
     private TextView tvContactName, tvContactOffice, tvContactEmail, tvContactPhone, tvReporterEmail;
 
+    private FirebaseFirestore db;
+
+    private String title;
+    private String itemName;
+    private String status;
+    private String icon;
+    private String location;
+    private String date;
+    private String category;
+    private String description;
+    private String contactName;
+    private String contactEmail;
+    private String contactPhone;
+    private String reporterEmail;
+    private String imageUrl;
+    private String documentId;
+    private String collectionName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_details);
 
+        db = FirebaseFirestore.getInstance();
+
+        initialiseViews();
+        readIntentData();
+        applyDefaultValues();
+        displayData();
+
+        if (isDateMissing()) {
+            loadExactDateFromFirestore();
+        }
+
+        if (btnBackItemDetails != null) {
+            btnBackItemDetails.setOnClickListener(v -> finish());
+        }
+
+        if (btnContactPerson != null) {
+            btnContactPerson.setOnClickListener(v ->
+                    Toast.makeText(this, "Please contact the Lost & Found Office", Toast.LENGTH_SHORT).show()
+            );
+        }
+    }
+
+    private void initialiseViews() {
         btnBackItemDetails = findViewById(R.id.btnBackItemDetails);
         btnContactPerson = findViewById(R.id.btnContactPerson);
 
@@ -60,35 +118,54 @@ public class ItemDetailsActivity extends AppCompatActivity {
         tvContactEmail = findViewById(R.id.tvContactEmail);
         tvContactPhone = findViewById(R.id.tvContactPhone);
         tvReporterEmail = findViewById(R.id.tvReporterEmail);
+    }
 
-        String title = getIntent().getStringExtra("title");
-        String itemName = getIntent().getStringExtra("itemName");
-        String status = getIntent().getStringExtra("status");
-        String icon = getIntent().getStringExtra("icon");
-        String location = getIntent().getStringExtra("location");
-        String date = getIntent().getStringExtra("date");
-        String category = getIntent().getStringExtra("category");
-        String description = getIntent().getStringExtra("description");
-        String contactName = getIntent().getStringExtra("contactName");
-        String contactEmail = getIntent().getStringExtra("contactEmail");
-        String contactPhone = getIntent().getStringExtra("contactPhone");
-        String reporterEmail = getIntent().getStringExtra("reporterEmail");
-        String imageUrl = getIntent().getStringExtra("imageUrl");
+    private void readIntentData() {
+        title = getCleanExtra("title");
+        itemName = getCleanExtra("itemName");
+        status = getCleanExtra("status");
+        icon = getCleanExtra("icon");
+        location = getCleanExtra("location");
+        date = getBestDateFromIntent();
+        category = getCleanExtra("category");
+        description = getCleanExtra("description");
+        contactName = getCleanExtra("contactName");
+        contactEmail = getCleanExtra("contactEmail");
+        contactPhone = getCleanExtra("contactPhone");
+        reporterEmail = getCleanExtra("reporterEmail");
+        imageUrl = getCleanExtra("imageUrl");
 
-        if (title == null || title.trim().isEmpty()) title = itemName;
-        if (title == null || title.trim().isEmpty()) title = "Item details unavailable";
-        if (status == null || status.trim().isEmpty()) status = "Lost";
-        if (icon == null) icon = status.equalsIgnoreCase("Found") ? "Found" : "Lost";
-        if (location == null || location.trim().isEmpty()) location = "Location not available";
-        if (date == null || date.trim().isEmpty()) date = "Date not available";
-        if (category == null || category.trim().isEmpty()) category = "Category not available";
-        if (description == null) {
-            description = "No description provided.";
+        documentId = getCleanExtra("documentId");
+        collectionName = getCleanExtra("collectionName");
+    }
+
+    private void applyDefaultValues() {
+        if (title.isEmpty()) title = itemName;
+        if (title.isEmpty()) title = "Item details unavailable";
+
+        if (itemName.isEmpty()) itemName = title;
+
+        if (status.isEmpty()) status = "Lost";
+
+        if (collectionName.isEmpty()) {
+            collectionName = status.equalsIgnoreCase("Found") ? "found_reports" : "lost_reports";
         }
-        if (contactName == null) contactName = "Student Services";
-        if (contactEmail == null) contactEmail = "lostandfound@university.ac.uk";
-        if (contactPhone == null) contactPhone = "Available through university office";
 
+        if (icon.isEmpty()) {
+            icon = status.equalsIgnoreCase("Found") ? "Found" : "Lost";
+        }
+
+        if (location.isEmpty()) location = "Location not available";
+        if (date.isEmpty()) date = "Date not available";
+        if (category.isEmpty()) category = "Category not available";
+        if (description.isEmpty()) description = "No description provided.";
+
+        if (contactName.isEmpty()) contactName = "Student Services";
+        if (contactEmail.isEmpty()) contactEmail = OFFICE_EMAIL;
+        if (contactPhone.isEmpty()) contactPhone = OFFICE_PHONE;
+    }
+
+    private void displayData() {
         tvDetailIcon.setText(icon);
         tvDetailTitle.setText(title);
         tvDetailStatus.setText(status);
@@ -96,24 +173,222 @@ public class ItemDetailsActivity extends AppCompatActivity {
         tvDetailDate.setText(date);
         tvDetailCategory.setText(category);
         tvDetailDescription.setText(description);
+
         tvContactName.setText(OFFICE_NAME);
         tvContactOffice.setText(OFFICE_DESK);
         tvContactEmail.setText(OFFICE_EMAIL);
         tvContactPhone.setText(OFFICE_PHONE);
-        showReporterEmail(reporterEmail, contactEmail);
 
+        showReporterEmail(reporterEmail, contactEmail);
         showImageOrIcon(imageUrl, status, category);
         styleStatus(status);
+    }
 
-        if (btnBackItemDetails != null) {
-            btnBackItemDetails.setOnClickListener(v -> finish());
+    private boolean isDateMissing() {
+        return date == null
+                || date.trim().isEmpty()
+                || date.equalsIgnoreCase("Date not available");
+    }
+
+    private void loadExactDateFromFirestore() {
+        if (documentId == null || documentId.trim().isEmpty()) {
+            tryLoadDateByMatchingItem();
+            return;
         }
 
-        if (btnContactPerson != null) {
-            btnContactPerson.setOnClickListener(v ->
-                    Toast.makeText(this, "Please contact the Lost & Found Office", Toast.LENGTH_SHORT).show()
-            );
+        db.collection(collectionName)
+                .document(documentId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists()) {
+                        String firestoreDate = getBestDateFromDocument(document);
+
+                        if (!firestoreDate.isEmpty()) {
+                            date = firestoreDate;
+                            tvDetailDate.setText(date);
+                        } else {
+                            tvDetailDate.setText("Date not available");
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> tvDetailDate.setText("Date not available"));
+    }
+
+    private void tryLoadDateByMatchingItem() {
+        if (itemName == null || itemName.trim().isEmpty()
+                || itemName.equalsIgnoreCase("Item details unavailable")) {
+            tvDetailDate.setText("Date not available");
+            return;
         }
+
+        db.collection(collectionName)
+                .limit(100)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        if (isMatchingItem(document)) {
+                            String firestoreDate = getBestDateFromDocument(document);
+
+                            if (!firestoreDate.isEmpty()) {
+                                date = firestoreDate;
+                                tvDetailDate.setText(date);
+                                return;
+                            }
+                        }
+                    }
+
+                    tvDetailDate.setText("Date not available");
+                })
+                .addOnFailureListener(e -> tvDetailDate.setText("Date not available"));
+    }
+
+    private boolean isMatchingItem(DocumentSnapshot document) {
+        String docItemName = getStringFromDocument(document, "itemName");
+        String docTitle = getStringFromDocument(document, "title");
+        String docName = getStringFromDocument(document, "name");
+        String docLocation = getStringFromDocument(document, "location");
+        String docCategory = getStringFromDocument(document, "category");
+
+        if (matches(itemName, docItemName)) return true;
+        if (matches(itemName, docTitle)) return true;
+        if (matches(itemName, docName)) return true;
+
+        return !location.equalsIgnoreCase("Location not available")
+                && !category.equalsIgnoreCase("Category not available")
+                && matches(location, docLocation)
+                && matches(category, docCategory);
+    }
+
+    private String getBestDateFromIntent() {
+        String dateValue = getCleanExtra("date");
+        if (isUsableDate(dateValue)) return dateValue;
+
+        for (String fieldName : DATE_FIELD_NAMES) {
+            if ("date".equals(fieldName)) {
+                continue;
+            }
+            String value = getCleanExtra(fieldName);
+            if (isUsableDate(value)) {
+                return value;
+            }
+        }
+
+        long timestampMillis = getLongExtra("timestampMillis");
+        if (timestampMillis > 0) return formatDateTime(timestampMillis);
+
+        long createdAtMillis = getLongExtra("createdAtMillis");
+        if (createdAtMillis > 0) return formatDateTime(createdAtMillis);
+
+        long uploadTimestampMillis = getLongExtra("uploadTimestampMillis");
+        if (uploadTimestampMillis > 0) return formatDateTime(uploadTimestampMillis);
+
+        return "";
+    }
+
+    private String getBestDateFromDocument(DocumentSnapshot document) {
+        for (String fieldName : DATE_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) return value;
+        }
+
+        for (String fieldName : TIMESTAMP_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) return value;
+        }
+
+        for (String fieldName : MILLIS_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) return value;
+        }
+
+        return "";
+    }
+
+    private String getDateField(DocumentSnapshot document, String fieldName) {
+        Object value = document.get(fieldName);
+
+        if (value == null) {
+            return "";
+        }
+
+        if (value instanceof Timestamp) {
+            Timestamp timestamp = (Timestamp) value;
+            return formatDateTime(timestamp.toDate().getTime());
+        }
+
+        if (value instanceof Date) {
+            Date dateValue = (Date) value;
+            return formatDateTime(dateValue.getTime());
+        }
+
+        if (value instanceof Number) {
+            long millis = ((Number) value).longValue();
+            if (millis > 0) return formatDateTime(millis);
+            return "";
+        }
+
+        if (value instanceof String) {
+            String text = ((String) value).trim();
+            if (!isUsableDate(text)) {
+                return "";
+            }
+            if (isMillisField(fieldName)) {
+                long millis = parseMillis(text);
+                return millis > 0 ? formatDateTime(millis) : "";
+            }
+            return text;
+        }
+
+        String text = value.toString().trim();
+        return isUsableDate(text) ? text : "";
+    }
+
+    private String getCleanExtra(String key) {
+        String value = getIntent().getStringExtra(key);
+        return value == null ? "" : value.trim();
+    }
+
+    private long getLongExtra(String key) {
+        long value = getIntent().getLongExtra(key, -1);
+        if (value > 0) {
+            return value;
+        }
+        return parseMillis(getCleanExtra(key));
+    }
+
+    private long parseMillis(String value) {
+        try {
+            long millis = Long.parseLong(value.trim());
+            return millis > 0 ? millis : 0L;
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
+    }
+
+    private boolean isMillisField(String fieldName) {
+        return "timestampMillis".equals(fieldName) || "createdAtMillis".equals(fieldName);
+    }
+
+    private boolean isUsableDate(String value) {
+        return value != null
+                && !value.trim().isEmpty()
+                && !value.trim().equalsIgnoreCase("Date not available");
+    }
+
+    private String getStringFromDocument(DocumentSnapshot document, String fieldName) {
+        String value = document.getString(fieldName);
+        return value == null ? "" : value.trim();
+    }
+
+    private boolean matches(String first, String second) {
+        if (first == null || second == null) return false;
+        return first.trim().equalsIgnoreCase(second.trim());
+    }
+
+    private String formatDateTime(long millis) {
+        Date dateValue = new Date(millis);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault());
+        return formatter.format(dateValue);
     }
 
     private void showImageOrIcon(String imageUrl, String status, String category) {
@@ -175,6 +450,7 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
     private void showReporterEmail(String reporterEmail, String contactEmail) {
         String reporter = cleanText(reporterEmail);
+
         if (reporter.isEmpty()) {
             reporter = cleanText(contactEmail);
         }
@@ -190,23 +466,32 @@ public class ItemDetailsActivity extends AppCompatActivity {
 
     private int getDefaultIconRes(String status, String category) {
         String normalizedCategory = category == null ? "" : category.toLowerCase();
+
         if (normalizedCategory.contains("key")) {
             return R.drawable.ic_key;
         }
+
         if (normalizedCategory.contains("bottle")) {
             return R.drawable.ic_bottle;
         }
+
         if (normalizedCategory.contains("laptop") || normalizedCategory.contains("electronic")) {
             return R.drawable.ic_laptop;
         }
+
         if (normalizedCategory.contains("bag") || normalizedCategory.contains("backpack")) {
             return R.drawable.ic_bag;
         }
-        return status != null && status.equalsIgnoreCase("Found") ? R.drawable.ic_report_found : R.drawable.ic_bag;
+
+        return status != null && status.equalsIgnoreCase("Found")
+                ? R.drawable.ic_report_found
+                : R.drawable.ic_bag;
     }
 
     private int getStatusTextColor(String status) {
-        return status != null && status.equalsIgnoreCase("Found") ? R.color.status_found : R.color.status_lost;
+        return status != null && status.equalsIgnoreCase("Found")
+                ? R.color.status_found
+                : R.color.status_lost;
     }
 
     private String cleanText(String value) {

@@ -34,19 +34,34 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ViewReportsActivity extends AppCompatActivity {
 
     private static final String TAG = "ViewReportsActivity";
+    private static final String[] DATE_FIELD_NAMES = {
+            "date", "dateTime", "selectedDate", "userDate", "lostDate",
+            "foundDate", "itemDate", "reportDate", "uploadDate"
+    };
+    private static final String[] TIMESTAMP_FIELD_NAMES = {
+            "createdAt", "timestamp", "uploadedAt", "uploadTimestamp"
+    };
+    private static final String[] MILLIS_FIELD_NAMES = {
+            "timestampMillis", "createdAtMillis"
+    };
 
     private View btnBackReports;
     private TextInputEditText etSearchReports;
     private TextView chipAll;
     private TextView chipLost;
     private TextView chipFound;
+
+
     private LinearLayout reportsContainer;
     private TextView tvEmptyState;
 
@@ -143,7 +158,7 @@ public class ViewReportsActivity extends AppCompatActivity {
                 .addOnSuccessListener(lostSnapshot -> {
                     loadedLostReportCount = lostSnapshot.size();
                     Log.d(TAG, "My lost reports loaded: " + loadedLostReportCount);
-                    addSnapshotReports(allReports, lostSnapshot, "Lost");
+                    addSnapshotReports(allReports, lostSnapshot, "Lost", "lost_reports");
                     lostReportsLoaded = true;
                     if (foundReportsLoaded) {
                         onBothQueriesComplete();
@@ -164,7 +179,7 @@ public class ViewReportsActivity extends AppCompatActivity {
                 .addOnSuccessListener(foundSnapshot -> {
                     loadedFoundReportCount = foundSnapshot.size();
                     Log.d(TAG, "My found reports loaded: " + loadedFoundReportCount);
-                    addSnapshotReports(allReports, foundSnapshot, "Found");
+                    addSnapshotReports(allReports, foundSnapshot, "Found", "found_reports");
                     foundReportsLoaded = true;
                     if (lostReportsLoaded) {
                         onBothQueriesComplete();
@@ -179,10 +194,10 @@ public class ViewReportsActivity extends AppCompatActivity {
                     }
                 });
     }
-    
+
     private void onBothQueriesComplete() {
         Collections.sort(allReports, (first, second) ->
-                Long.compare(second.createdAtMillis, first.createdAtMillis)
+                Long.compare(second.getSortMillis(), first.getSortMillis())
         );
         Log.d(TAG, "currentUid=" + currentUid
                 + ", my lost reports=" + loadedLostReportCount
@@ -191,11 +206,20 @@ public class ViewReportsActivity extends AppCompatActivity {
         renderReports();
     }
 
-    private void addSnapshotReports(List<ReportListItem> reports, QuerySnapshot snapshot, String fallbackStatus) {
+    private void addSnapshotReports(
+            List<ReportListItem> reports,
+            QuerySnapshot snapshot,
+            String fallbackStatus,
+            String collectionName
+    ) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
+            String title = getDocumentString(document, "title", "");
             String itemName = firstDocumentString(document, "itemName", "title");
             if (itemName.isEmpty()) {
                 itemName = "Untitled item";
+            }
+            if (title.isEmpty()) {
+                title = itemName;
             }
 
             String status = normalizeStatus(getDocumentString(document, "status", fallbackStatus));
@@ -205,12 +229,17 @@ public class ViewReportsActivity extends AppCompatActivity {
             if (contactEmail.isEmpty()) {
                 contactEmail = reporterEmail;
             }
+            long createdAtMillis = getMillisFromFields(document, "createdAt", "createdAtMillis");
+            long timestampMillis = getMillisFromFields(document, "timestamp", "uploadedAt", "uploadTimestamp", "timestampMillis");
 
             reports.add(new ReportListItem(
+                    document.getId(),
+                    collectionName,
+                    title,
                     itemName,
                     status,
                     getDocumentString(document, "location", ""),
-                    firstDocumentString(document, "date", "dateTime"),
+                    getBestDateFromDocument(document),
                     getDocumentString(document, "time", ""),
                     getDocumentString(document, "category", ""),
                     getDocumentString(document, "description", ""),
@@ -219,7 +248,8 @@ public class ViewReportsActivity extends AppCompatActivity {
                     getDocumentString(document, "contactPhone", ""),
                     reporterEmail,
                     getDocumentString(document, "imageUrl", ""),
-                    getCreatedAtMillis(document)
+                    timestampMillis,
+                    createdAtMillis
             ));
         }
     }
@@ -461,11 +491,15 @@ public class ViewReportsActivity extends AppCompatActivity {
 
     private void openItemDetails(ReportListItem report) {
         Intent intent = new Intent(ViewReportsActivity.this, ItemDetailsActivity.class);
-        intent.putExtra("title", report.itemName);
+        intent.putExtra("documentId", report.documentId);
+        intent.putExtra("collectionName", report.collectionName);
+        intent.putExtra("date", formatDateTime(report.date, report.time));
+        intent.putExtra("timestampMillis", report.timestampMillis);
+        intent.putExtra("createdAtMillis", report.createdAtMillis);
+        intent.putExtra("title", report.title);
         intent.putExtra("itemName", report.itemName);
         intent.putExtra("status", report.status);
         intent.putExtra("location", report.location);
-        intent.putExtra("date", report.date);
         intent.putExtra("time", report.time);
         intent.putExtra("category", report.category);
         intent.putExtra("description", report.description);
@@ -499,9 +533,106 @@ public class ViewReportsActivity extends AppCompatActivity {
         return "";
     }
 
-    private long getCreatedAtMillis(DocumentSnapshot document) {
-        Timestamp timestamp = document.getTimestamp("createdAt");
-        return timestamp == null ? 0L : timestamp.toDate().getTime();
+    private String getBestDateFromDocument(DocumentSnapshot document) {
+        for (String fieldName : DATE_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) {
+                return value;
+            }
+        }
+
+        for (String fieldName : TIMESTAMP_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) {
+                return value;
+            }
+        }
+
+        for (String fieldName : MILLIS_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) {
+                return value;
+            }
+        }
+
+        return "";
+    }
+
+    private String getDateField(DocumentSnapshot document, String fieldName) {
+        Object value = document.get(fieldName);
+        if (value == null) {
+            return "";
+        }
+
+        if (value instanceof Timestamp) {
+            return formatDateTime(((Timestamp) value).toDate().getTime());
+        }
+
+        if (value instanceof Date) {
+            return formatDateTime(((Date) value).getTime());
+        }
+
+        if (value instanceof Number) {
+            long millis = ((Number) value).longValue();
+            return millis > 0 ? formatDateTime(millis) : "";
+        }
+
+        String text = String.valueOf(value).trim();
+        if (!isUsableDate(text)) {
+            return "";
+        }
+
+        if (isMillisField(fieldName)) {
+            long millis = parseMillis(text);
+            return millis > 0 ? formatDateTime(millis) : "";
+        }
+
+        return text;
+    }
+
+    private long getMillisFromFields(DocumentSnapshot document, String... fieldNames) {
+        for (String fieldName : fieldNames) {
+            long millis = getMillisFromField(document.get(fieldName));
+            if (millis > 0) {
+                return millis;
+            }
+        }
+        return 0L;
+    }
+
+    private long getMillisFromField(Object value) {
+        if (value instanceof Timestamp) {
+            return ((Timestamp) value).toDate().getTime();
+        }
+        if (value instanceof Date) {
+            return ((Date) value).getTime();
+        }
+        if (value instanceof Number) {
+            return Math.max(0L, ((Number) value).longValue());
+        }
+        if (value instanceof String) {
+            return parseMillis((String) value);
+        }
+        return 0L;
+    }
+
+    private long parseMillis(String value) {
+        try {
+            long millis = Long.parseLong(value.trim());
+            return millis > 0 ? millis : 0L;
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
+    }
+
+    private boolean isMillisField(String fieldName) {
+        return "timestampMillis".equals(fieldName) || "createdAtMillis".equals(fieldName);
+    }
+
+    private boolean isUsableDate(String value) {
+        return value != null
+                && !value.trim().isEmpty()
+                && !value.trim().equalsIgnoreCase("Date not available");
     }
 
     private String normalizeStatus(String status) {
@@ -512,8 +643,11 @@ public class ViewReportsActivity extends AppCompatActivity {
     }
 
     private String formatDateTime(String date, String time) {
-        boolean hasDate = date != null && !date.trim().isEmpty();
+        boolean hasDate = isUsableDate(date);
         boolean hasTime = time != null && !time.trim().isEmpty();
+        if (hasDate && date.trim().contains(":")) {
+            return date.trim();
+        }
         if (hasDate && hasTime) {
             return date.trim() + " at " + time.trim();
         }
@@ -524,6 +658,10 @@ public class ViewReportsActivity extends AppCompatActivity {
             return time.trim();
         }
         return "Date not available";
+    }
+
+    private String formatDateTime(long millis) {
+        return new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(new Date(millis));
     }
 
     private String emptyFallback(String value, String fallback) {
@@ -538,6 +676,9 @@ public class ViewReportsActivity extends AppCompatActivity {
     }
 
     private static class ReportListItem {
+        final String documentId;
+        final String collectionName;
+        final String title;
         final String itemName;
         final String status;
         final String location;
@@ -550,9 +691,13 @@ public class ViewReportsActivity extends AppCompatActivity {
         final String contactPhone;
         final String reporterEmail;
         final String imageUrl;
+        final long timestampMillis;
         final long createdAtMillis;
 
         ReportListItem(
+                String documentId,
+                String collectionName,
+                String title,
                 String itemName,
                 String status,
                 String location,
@@ -565,8 +710,12 @@ public class ViewReportsActivity extends AppCompatActivity {
                 String contactPhone,
                 String reporterEmail,
                 String imageUrl,
+                long timestampMillis,
                 long createdAtMillis
         ) {
+            this.documentId = documentId == null ? "" : documentId.trim();
+            this.collectionName = collectionName == null ? "" : collectionName.trim();
+            this.title = title == null ? "" : title.trim();
             this.itemName = itemName;
             this.status = status;
             this.location = location;
@@ -579,7 +728,15 @@ public class ViewReportsActivity extends AppCompatActivity {
             this.contactPhone = contactPhone;
             this.reporterEmail = reporterEmail;
             this.imageUrl = imageUrl == null ? "" : imageUrl.trim();
+            this.timestampMillis = timestampMillis;
             this.createdAtMillis = createdAtMillis;
+        }
+
+        long getSortMillis() {
+            if (createdAtMillis > 0) {
+                return createdAtMillis;
+            }
+            return timestampMillis;
         }
     }
 }

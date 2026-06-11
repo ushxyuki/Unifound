@@ -172,6 +172,7 @@ public class ReportFoundActivity extends AppCompatActivity {
         report.put("contactPhone", contactPhone);
         report.put("imageUrl", "");
         report.put("createdAt", FieldValue.serverTimestamp());
+        report.put("timestamp", FieldValue.serverTimestamp());
         report.put("userId", currentUser.getUid());
 
         saveReportWithImage(reportRef, report);

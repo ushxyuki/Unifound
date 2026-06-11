@@ -170,6 +170,7 @@ public class ReportLostActivity extends AppCompatActivity {
         report.put("userId", currentUser.getUid());
         report.put("reporterEmail", reporterEmail);
         report.put("createdAt", FieldValue.serverTimestamp());
+        report.put("timestamp", FieldValue.serverTimestamp());
         report.put("imageUrl", ""); // Default empty
 
         // Logic for image handling

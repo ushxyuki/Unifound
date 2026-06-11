@@ -25,12 +25,15 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +42,16 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final String[] DATE_FIELD_NAMES = {
+            "date", "dateTime", "selectedDate", "userDate", "lostDate",
+            "foundDate", "itemDate", "reportDate", "uploadDate"
+    };
+    private static final String[] TIMESTAMP_FIELD_NAMES = {
+            "createdAt", "timestamp", "uploadedAt", "uploadTimestamp"
+    };
+    private static final String[] MILLIS_FIELD_NAMES = {
+            "timestampMillis", "createdAtMillis"
+    };
     private MaterialCardView cardReportLost;
     private MaterialCardView cardReportFound;
     private EditText etSearch;
@@ -246,12 +259,14 @@ public class MainActivity extends AppCompatActivity {
         // 10. Log unique reports count
         Log.d("FirestoreDebug", "Home unique reports count: " + allPublicReports.size());
 
-        // Sort by createdAtMillis descending
+        // Sort by the best available server/report timestamp descending
         Collections.sort(allPublicReports, (first, second) -> {
-            if (first.createdAtMillis == 0 && second.createdAtMillis == 0) return 0;
-            if (first.createdAtMillis == 0) return 1;
-            if (second.createdAtMillis == 0) return -1;
-            return Long.compare(second.createdAtMillis, first.createdAtMillis);
+            long firstMillis = first.getSortMillis();
+            long secondMillis = second.getSortMillis();
+            if (firstMillis == 0 && secondMillis == 0) return 0;
+            if (firstMillis == 0) return 1;
+            if (secondMillis == 0) return -1;
+            return Long.compare(secondMillis, firstMillis);
         });
         
         renderReports();
@@ -315,8 +330,17 @@ public class MainActivity extends AppCompatActivity {
             String imageUrl = getDocumentString(document, "imageUrl", "");
             String category = getDocumentString(document, "category", "");
             String description = getDocumentString(document, "description", "");
+            String reporterEmail = getDocumentString(document, "reporterEmail", "");
+            String contactName = getDocumentString(document, "contactName", "");
+            String contactEmail = getDocumentString(document, "contactEmail", "");
+            if (contactEmail.isEmpty()) {
+                contactEmail = reporterEmail;
+            }
+            String contactPhone = getDocumentString(document, "contactPhone", "");
+            String date = getBestDateFromDocument(document);
 
-            long createdAtMillis = getCreatedAtMillis(document);
+            long createdAtMillis = getMillisFromFields(document, "createdAt", "createdAtMillis");
+            long timestampMillis = getMillisFromFields(document, "timestamp", "uploadedAt", "uploadTimestamp", "timestampMillis");
 
             reports.add(new RecentReportItem(
                     documentId,
@@ -328,6 +352,12 @@ public class MainActivity extends AppCompatActivity {
                     imageUrl,
                     category,
                     description,
+                    date,
+                    contactName,
+                    contactEmail,
+                    contactPhone,
+                    reporterEmail,
+                    timestampMillis,
                     createdAtMillis
             ));
         }
@@ -342,12 +372,22 @@ public class MainActivity extends AppCompatActivity {
         card.setCardElevation(dp(3));
         card.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ItemDetailsActivity.class);
+            intent.putExtra("documentId", report.documentId);
+            intent.putExtra("collectionName", report.sourceCollection);
+            intent.putExtra("date", report.date);
+            intent.putExtra("timestampMillis", report.timestampMillis);
+            intent.putExtra("createdAtMillis", report.createdAtMillis);
+            intent.putExtra("title", report.title);
             intent.putExtra("itemName", report.itemName);
             intent.putExtra("status", report.status);
             intent.putExtra("location", report.location);
-            intent.putExtra("imageUrl", report.imageUrl);
             intent.putExtra("category", report.category);
             intent.putExtra("description", report.description);
+            intent.putExtra("contactName", report.contactName);
+            intent.putExtra("contactEmail", report.contactEmail);
+            intent.putExtra("contactPhone", report.contactPhone);
+            intent.putExtra("reporterEmail", report.reporterEmail);
+            intent.putExtra("imageUrl", report.imageUrl);
             startActivity(intent);
         });
 
@@ -554,17 +594,104 @@ public class MainActivity extends AppCompatActivity {
         return "";
     }
 
-    private long getCreatedAtMillis(DocumentSnapshot document) {
-        try {
-            Object ts = document.get("createdAt");
-            if (ts != null) {
-                com.google.firebase.Timestamp timestamp = (com.google.firebase.Timestamp) ts;
-                return timestamp.toDate().getTime();
+    private String getBestDateFromDocument(DocumentSnapshot document) {
+        for (String fieldName : DATE_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) return value;
+        }
+
+        for (String fieldName : TIMESTAMP_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) return value;
+        }
+
+        for (String fieldName : MILLIS_FIELD_NAMES) {
+            String value = getDateField(document, fieldName);
+            if (!value.isEmpty()) return value;
+        }
+
+        return "";
+    }
+
+    private String getDateField(DocumentSnapshot document, String fieldName) {
+        Object value = document.get(fieldName);
+        if (value == null) {
+            return "";
+        }
+
+        if (value instanceof Timestamp) {
+            return formatDateTime(((Timestamp) value).toDate().getTime());
+        }
+
+        if (value instanceof Date) {
+            return formatDateTime(((Date) value).getTime());
+        }
+
+        if (value instanceof Number) {
+            long millis = ((Number) value).longValue();
+            return millis > 0 ? formatDateTime(millis) : "";
+        }
+
+        String text = String.valueOf(value).trim();
+        if (!isUsableDate(text)) {
+            return "";
+        }
+
+        if (isMillisField(fieldName)) {
+            long millis = parseMillis(text);
+            return millis > 0 ? formatDateTime(millis) : "";
+        }
+
+        return text;
+    }
+
+    private long getMillisFromFields(DocumentSnapshot document, String... fieldNames) {
+        for (String fieldName : fieldNames) {
+            long millis = getMillisFromField(document.get(fieldName));
+            if (millis > 0) {
+                return millis;
             }
-        } catch (Exception e) {
-            Log.w(TAG, "Failed to parse createdAt timestamp", e);
         }
         return 0L;
+    }
+
+    private long getMillisFromField(Object value) {
+        if (value instanceof Timestamp) {
+            return ((Timestamp) value).toDate().getTime();
+        }
+        if (value instanceof Date) {
+            return ((Date) value).getTime();
+        }
+        if (value instanceof Number) {
+            return Math.max(0L, ((Number) value).longValue());
+        }
+        if (value instanceof String) {
+            return parseMillis((String) value);
+        }
+        return 0L;
+    }
+
+    private long parseMillis(String value) {
+        try {
+            long millis = Long.parseLong(value.trim());
+            return millis > 0 ? millis : 0L;
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
+    }
+
+    private boolean isMillisField(String fieldName) {
+        return "timestampMillis".equals(fieldName) || "createdAtMillis".equals(fieldName);
+    }
+
+    private boolean isUsableDate(String value) {
+        return value != null
+                && !value.trim().isEmpty()
+                && !value.trim().equalsIgnoreCase("Date not available");
+    }
+
+    private String formatDateTime(long millis) {
+        return new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(new Date(millis));
     }
 
     private String normalizeStatus(String status) {
@@ -585,6 +712,12 @@ public class MainActivity extends AppCompatActivity {
         final String imageUrl;
         final String category;
         final String description;
+        final String date;
+        final String contactName;
+        final String contactEmail;
+        final String contactPhone;
+        final String reporterEmail;
+        final long timestampMillis;
         final long createdAtMillis;
 
         RecentReportItem(
@@ -597,6 +730,12 @@ public class MainActivity extends AppCompatActivity {
                 String imageUrl,
                 String category,
                 String description,
+                String date,
+                String contactName,
+                String contactEmail,
+                String contactPhone,
+                String reporterEmail,
+                long timestampMillis,
                 long createdAtMillis
         ) {
             this.documentId = documentId;
@@ -608,7 +747,20 @@ public class MainActivity extends AppCompatActivity {
             this.imageUrl = imageUrl == null ? "" : imageUrl.trim();
             this.category = category == null ? "" : category;
             this.description = description == null ? "" : description;
+            this.date = date == null ? "" : date.trim();
+            this.contactName = contactName == null ? "" : contactName.trim();
+            this.contactEmail = contactEmail == null ? "" : contactEmail.trim();
+            this.contactPhone = contactPhone == null ? "" : contactPhone.trim();
+            this.reporterEmail = reporterEmail == null ? "" : reporterEmail.trim();
+            this.timestampMillis = timestampMillis;
             this.createdAtMillis = createdAtMillis;
+        }
+
+        long getSortMillis() {
+            if (createdAtMillis > 0) {
+                return createdAtMillis;
+            }
+            return timestampMillis;
         }
     }
 }
